@@ -11,9 +11,23 @@ impl Ray {
     pub fn at(&self, t: f64) -> Point3 {
         self.origin.clone() + self.dir.clone() * t
     }
+    
+    fn hit_sphere(&self, center: Point3, radius: f64) -> bool {
+        let oc = center - self.origin;
+        let a = self.dir.dot(self.dir);
+        let b = -2.0 * self.dir.dot(oc);
+        let c = oc.dot(oc) - radius * radius;
+        let discriminant = b * b - 4.0 * a * c;
+        discriminant >= 0.0
+    }
+
     pub fn color(&self) -> Color {
+        if self.hit_sphere(Point3 { e: [0.0, 0.0, -1.0] }, 0.5) {
+            return Color { e: [1.0, 0.0, 0.0] };
+        }
+
         let unit_direction = self.dir.unit();
         let a = (unit_direction.y() + 1.0) * 0.5;
-        Vec3 { e: [1.0, 1.0, 1.0] } * (1.0 - a) + Vec3 { e: [0.5, 0.7, 1.0] } * a
+        Color { e: [1.0, 1.0, 1.0] } * (1.0 - a) + Color { e: [0.5, 0.7, 1.0] } * a
     }
 }
