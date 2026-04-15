@@ -1,7 +1,13 @@
 mod vec3;
 mod ray;
+mod hittable;
+mod sphere;
+mod hittable_list;
 
 use vec3::{Vec3};
+use sphere::{Sphere};
+use hittable_list::{HittableList};
+use Vec3 as Point3;
 use Vec3 as Color;
 use ray::{Ray};
 
@@ -12,6 +18,11 @@ fn main() {
 
     // Calculate the image height.
     let image_height: usize = (image_width as f64 / aspect_ratio) as usize;
+
+    // World
+    let mut world: HittableList = HittableList::default_hit_list();
+    world.add(Sphere { center: Point3 { e: [0.0, 0.0, -1.0] }, radius: 0.5 });
+    world.add(Sphere { center: Point3 { e: [0.0, -100.5, -1.0] }, radius: 100.0 });
 
     // Camera
     let focal_length: f64 = 1.0;
@@ -53,7 +64,7 @@ fn main() {
                 origin: camera_center,
                 dir: ray_direction,
             };
-            let pixel_color: Color = ray.color();
+            let pixel_color: Color = ray.color(&world);
             pixel_color.write_color();
         }
     }
