@@ -21,8 +21,8 @@ impl HitRecord {
 
     pub fn default() -> Self {
         Self {
-            p: Point3 { e: [0.0; 3]},
-            normal: Vec3 { e: [0.0; 3]},
+            p: Point3::origin(),
+            normal: Vec3::origin(),
             t: 0.0,
             front_face: false,
         }
@@ -30,6 +30,5 @@ impl HitRecord {
 }
 
 pub trait Hittable {
-    // fn hit(&self, r: Ray, ray_tmin: f64, ray_tmax: f64, rec: &mut HitRecord) -> bool;
     fn hit(&self, r: Ray, ray_t: Interval, rec: &mut HitRecord) -> bool;
 }
