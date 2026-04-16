@@ -1,5 +1,6 @@
 use crate::vec3::{Vec3};
 use crate::ray::{Ray};
+use crate::interval::{Interval};
 use Vec3 as Point3;
 
 #[derive(Copy, Clone)]
@@ -18,7 +19,7 @@ impl HitRecord {
         self.normal = if self.front_face { outward_normal } else { -outward_normal };
     }
 
-    pub fn default_hit_rec() -> Self {
+    pub fn default() -> Self {
         Self {
             p: Point3 { e: [0.0; 3]},
             normal: Vec3 { e: [0.0; 3]},
@@ -29,5 +30,6 @@ impl HitRecord {
 }
 
 pub trait Hittable {
-    fn hit(&self, r: Ray, ray_tmin: f64, ray_tmax: f64, rec: &mut HitRecord) -> bool;
+    // fn hit(&self, r: Ray, ray_tmin: f64, ray_tmax: f64, rec: &mut HitRecord) -> bool;
+    fn hit(&self, r: Ray, ray_t: Interval, rec: &mut HitRecord) -> bool;
 }

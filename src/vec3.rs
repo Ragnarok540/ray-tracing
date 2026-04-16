@@ -7,6 +7,10 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self { e: [x, y, z] }
+    }
+
     pub fn x(&self) -> f64 {
         self.e[0]
     }
@@ -39,9 +43,11 @@ impl Vec3 {
 
     pub fn cross(&self, other: Self) -> Self {
         Self {
-            e: [self.e[1] * other.e[2] - self.e[2] * other.e[1],
+            e: [
+                self.e[1] * other.e[2] - self.e[2] * other.e[1],
                 self.e[2] * other.e[0] - self.e[0] * other.e[2],
-                self.e[0] * other.e[1] - self.e[1] * other.e[0]],
+                self.e[0] * other.e[1] - self.e[1] * other.e[0],
+            ],
         }
     }
 
