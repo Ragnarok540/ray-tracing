@@ -5,6 +5,7 @@ mod sphere;
 mod hittable_list;
 mod interval;
 mod camera;
+mod utils;
 
 use vec3::{Vec3};
 use sphere::{Sphere};
@@ -19,7 +20,7 @@ fn main() {
     world.add(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0));
 
     // Camera
-    let mut camera: Camera = Camera::new(16.0 / 9.0, 400);
+    let mut camera: Camera = Camera::new(16.0 / 9.0, 400, 100);
     camera.render(&world);
 }
 

@@ -1,5 +1,6 @@
 use std::fmt;
 use std::ops;
+use crate::interval::{Interval};
 
 #[derive(Copy, Clone)]
 pub struct Vec3 {
@@ -56,10 +57,10 @@ impl Vec3 {
     }
 
     pub fn write_color(&self) {
-        let r = (255.999 * self.e[0]) as u8;
-        let g = (255.999 * self.e[1]) as u8;
-        let b = (255.999 * self.e[2]) as u8;
-
+        let intensity = Interval::new(0.000, 0.999);
+        let r = (256.0 * intensity.clamp(self.e[0])) as u8;
+        let g = (256.0 * intensity.clamp(self.e[1])) as u8;
+        let b = (256.0 * intensity.clamp(self.e[2])) as u8;
         println!("{r} {g} {b}")
     }
 }
