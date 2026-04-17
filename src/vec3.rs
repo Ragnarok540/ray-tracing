@@ -1,6 +1,7 @@
 use std::fmt;
 use std::ops;
 use crate::interval::{Interval};
+use crate::utils::{random_f64, random_range_f64};
 
 #[derive(Copy, Clone)]
 pub struct Vec3 {
@@ -62,6 +63,45 @@ impl Vec3 {
         let g = (256.0 * intensity.clamp(self.e[1])) as u8;
         let b = (256.0 * intensity.clamp(self.e[2])) as u8;
         println!("{r} {g} {b}")
+    }
+
+    fn random() -> Self {
+        Self {
+            e: [
+                random_f64(),
+                random_f64(),
+                random_f64(),
+            ],
+        }
+    }
+
+    fn random_range(min: f64, max: f64) -> Self {
+        Self {
+            e: [
+                random_range_f64(min, max),
+                random_range_f64(min, max),
+                random_range_f64(min, max),
+            ],
+        }
+    }
+
+    fn random_unit_vector() -> Self {
+        loop {
+            let p = Self::random_range(-1.0, 1.0);
+            let lensq = p.length_squared();
+            if 1e-160 < lensq && lensq <= 1.0 {
+                return p / lensq.sqrt();
+            }
+        }
+    }
+
+    pub fn random_on_hemisphere(normal: &Self) -> Self {
+        let on_unit_sphere = Self::random_unit_vector();
+        if on_unit_sphere.dot(*normal) > 0.0 { // In the same hemisphere as the normal
+            return on_unit_sphere;
+        } else {
+            return -on_unit_sphere;
+        }
     }
 }
 
