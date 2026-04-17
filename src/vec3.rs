@@ -57,11 +57,19 @@ impl Vec3 {
         self.clone() / self.length()
     }
 
+    fn linear_to_gamma(linear_component: f64) -> f64 {
+        if linear_component > 0.0 {
+            return linear_component.sqrt();
+        } else {
+            return 0.0;
+        }
+    }
+
     pub fn write_color(&self) {
         let intensity = Interval::new(0.000, 0.999);
-        let r = (256.0 * intensity.clamp(self.e[0])) as u8;
-        let g = (256.0 * intensity.clamp(self.e[1])) as u8;
-        let b = (256.0 * intensity.clamp(self.e[2])) as u8;
+        let r = (256.0 * intensity.clamp(Self::linear_to_gamma(self.e[0]))) as u8;
+        let g = (256.0 * intensity.clamp(Self::linear_to_gamma(self.e[1]))) as u8;
+        let b = (256.0 * intensity.clamp(Self::linear_to_gamma(self.e[2]))) as u8;
         println!("{r} {g} {b}")
     }
 
@@ -85,7 +93,7 @@ impl Vec3 {
         }
     }
 
-    fn random_unit_vector() -> Self {
+    pub fn random_unit_vector() -> Self {
         loop {
             let p = Self::random_range(-1.0, 1.0);
             let lensq = p.length_squared();
