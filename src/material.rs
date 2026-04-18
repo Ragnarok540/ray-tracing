@@ -4,7 +4,7 @@ use crate::hittable::{HitRecord};
 use Vec3 as Color;
 
 pub trait Material {
-    fn scatter(&self, r_in: Ray, rec: HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool;
+    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)>;
 }
 
 pub struct Lambertian {
@@ -18,10 +18,9 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, r_in: Ray, rec: HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool {
+    fn scatter(&self, _ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
         let scatter_direction = rec.normal + Vec3::random_unit_vector();
-        *scattered = Ray::new(rec.p, scatter_direction);
-        *attenuation = self.albedo;
-        return true;
+        let scattered = Ray::new(rec.p, scatter_direction);
+        Some((scattered, self.albedo))
     }
 }

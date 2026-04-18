@@ -60,20 +60,20 @@ impl Camera {
         self.pixel00_loc = viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5;
     }
 
-    fn ray_color(r: &Ray, depth: usize, world: &dyn Hittable) -> Color {
+    fn ray_color(ray: &Ray, depth: usize, world: &dyn Hittable) -> Color {
         if depth <= 0 {
             // If we've exceeded the ray bounce limit, no more light is gathered.
             return Color::origin();
         }
 
-        if let Some(rec) = world.hit(*r, Interval::new(0.001, f64::INFINITY)) {
+        if let Some(rec) = world.hit(*ray, Interval::new(0.001, f64::INFINITY)) {
             let direction = rec.normal + Vec3::random_unit_vector(); // Lambertian
             // let direction = Vec3::random_on_hemisphere(&rec.normal);
             return Self::ray_color(&Ray::new(rec.p, direction), depth - 1, world) * 0.5;
             // return (rec.normal + Color::new(1.0, 1.0, 1.0)) * 0.5;
         }
 
-        let unit_direction = r.dir.unit();
+        let unit_direction = ray.dir.unit();
         let a = (unit_direction.y() + 1.0) * 0.5;
         Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a
     }
