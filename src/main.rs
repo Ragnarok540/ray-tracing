@@ -6,6 +6,7 @@ mod hittable_list;
 mod interval;
 mod camera;
 mod utils;
+mod material;
 
 use vec3::{Vec3};
 use sphere::{Sphere};

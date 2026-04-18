@@ -3,7 +3,7 @@ use crate::ray::{Ray};
 use crate::interval::{Interval};
 use Vec3 as Point3;
 
-#[derive(Copy, Clone)]
+// #[derive(Copy, Clone)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
@@ -12,6 +12,15 @@ pub struct HitRecord {
 }
 
 impl HitRecord {
+    pub fn new(p: Point3, t: f64) -> Self {
+        Self {
+            p,
+            normal: Vec3::origin(),
+            t,
+            front_face: false,
+        }
+    }
+
     pub fn set_face_normal(&mut self, r: Ray, outward_normal: Vec3) {
         // Sets the hit record normal vector.
         // NOTE: the parameter `outward_normal` is assumed to have unit length.
@@ -30,5 +39,5 @@ impl HitRecord {
 }
 
 pub trait Hittable {
-    fn hit(&self, r: Ray, ray_t: Interval, rec: &mut HitRecord) -> bool;
+    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord>;
 }

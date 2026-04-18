@@ -66,10 +66,8 @@ impl Camera {
             return Color::origin();
         }
 
-        let mut rec = HitRecord::default();
-
-        if world.hit(*r, Interval::new(0.001, f64::INFINITY), &mut rec) {
-            let direction = *&rec.normal + Vec3::random_unit_vector(); // Lambertian
+        if let Some(rec) = world.hit(*r, Interval::new(0.001, f64::INFINITY)) {
+            let direction = rec.normal + Vec3::random_unit_vector(); // Lambertian
             // let direction = Vec3::random_on_hemisphere(&rec.normal);
             return Self::ray_color(&Ray::new(rec.p, direction), depth - 1, world) * 0.5;
             // return (rec.normal + Color::new(1.0, 1.0, 1.0)) * 0.5;
