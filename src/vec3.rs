@@ -111,6 +111,15 @@ impl Vec3 {
             return -on_unit_sphere;
         }
     }
+
+    pub fn near_zero(&self) -> bool {
+        let s: f64 = 1e-8;
+        self.e[0].abs() < s && self.e[1].abs() < s && self.e[2].abs() < s
+    }
+
+    pub fn reflect(v: &Self, n: &Self) -> Self {
+        *v - *n * v.dot(*n) * 2.0
+    }
 }
 
 impl fmt::Display for Vec3 {

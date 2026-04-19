@@ -19,8 +19,32 @@ impl Lambertian {
 
 impl Material for Lambertian {
     fn scatter(&self, _ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
-        let scatter_direction = rec.normal + Vec3::random_unit_vector();
+        let mut scatter_direction = rec.normal + Vec3::random_unit_vector();
+
+        // Catch degenerate scatter direction
+        if scatter_direction.near_zero() {
+            scatter_direction = rec.normal;
+        }
+
         let scattered = Ray::new(rec.p, scatter_direction);
+        Some((scattered, self.albedo))
+    }
+}
+
+pub struct Metal {
+    pub albedo: Color,
+}
+
+impl Metal {
+    pub fn new(albedo: Color) -> Self {
+        Self { albedo }
+    }
+}
+
+impl Material for Metal {
+    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
+        let reflected = Vec3::reflect(&ray.dir, &rec.normal);
+        let scattered = Ray::new(rec.p, reflected);
         Some((scattered, self.albedo))
     }
 }

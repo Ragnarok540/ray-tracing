@@ -12,13 +12,15 @@ use vec3::{Vec3};
 use sphere::{Sphere};
 use hittable_list::{HittableList};
 use camera::{Camera};
+use material::{Lambertian, Metal};
 use Vec3 as Point3;
+use Vec3 as Color;
 
 fn main() {
     // World
     let mut world: HittableList = HittableList::new();
-    world.add(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5));
-    world.add(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0));
+    world.add(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5, Metal::new(Color::new(0.1, 0.2, 0.5))));
+    world.add(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, Lambertian::new(Color::new(0.8, 0.8, 0.0))));
 
     // Camera
     let mut camera: Camera = Camera::new(16.0 / 9.0, 400, 100, 50);
