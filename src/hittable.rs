@@ -12,25 +12,40 @@ pub struct HitRecord<'a> {
     pub material: &'a dyn Material,
 }
 
-// impl HitRecord {
-    // pub fn new(p: Point3, t: f64) -> Self {
-    //     Self {
-    //         p,
-    //         t,
-
-    //         normal: Vec3::origin(),
-    //         front_face: false,
-    //     }
-    // }
-
-//     pub fn set_face_normal(&mut self, ray: Ray, outward_normal: Vec3) {
-//         // Sets the hit record normal vector.
-//         // NOTE: the parameter `outward_normal` is assumed to have unit length.
-//         self.front_face = ray.dir.dot(outward_normal) < 0.0;
-//         self.normal = if self.front_face { outward_normal } else { -outward_normal };
-//     }
-// }
-
 pub trait Hittable {
-    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord>;
+    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>>;
+}
+
+// https://refactoring.guru/design-patterns/composite/rust/example
+
+pub struct HittableList {
+    pub objects: Vec<Box<dyn Hittable>>,
+}
+
+impl HittableList {
+    pub fn new() -> Self {
+        Self {
+            objects: vec![]
+        }
+    }
+
+    pub fn add(&mut self, object: impl Hittable + 'static) {
+        self.objects.push(Box::new(object));
+    }
+}
+
+impl Hittable for HittableList {
+    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
+        let mut hit_anything: Option<HitRecord<'_>> = None;
+        let mut closest_so_far = ray_t.max;
+
+        for object in self.objects.iter() {
+            if let Some(hit) = object.hit(ray, Interval::new(ray_t.min, closest_so_far)) {
+                closest_so_far = hit.t;
+                hit_anything = Some(hit);
+            }
+        }
+
+        hit_anything
+    }
 }

@@ -2,7 +2,7 @@ use rand::prelude::*;
 
 use crate::vec3::{Vec3};
 use crate::ray::{Ray};
-use crate::hittable::{HitRecord, Hittable};
+use crate::hittable::{Hittable};
 use crate::interval::{Interval};
 use Vec3 as Point3;
 use Vec3 as Color;
