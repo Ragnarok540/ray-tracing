@@ -13,7 +13,7 @@ use vec3::{Vec3};
 use sphere::{Sphere};
 use hittable::{HittableList};
 use camera::{Camera};
-use material::{Lambertian, Metal};
+use material::{Lambertian, Metal, Dielectric};
 use Vec3 as Point3;
 use Vec3 as Color;
 
@@ -24,7 +24,7 @@ fn main() {
     // Materials
     let ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
     let center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    let left = Metal::new(Color::new(0.8, 0.8, 0.8), 0.3);
+    let left = Dielectric::new(1.5);
     let right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
 
     // Objects

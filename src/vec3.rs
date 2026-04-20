@@ -120,6 +120,13 @@ impl Vec3 {
     pub fn reflect(v: &Self, n: &Self) -> Self {
         *v - *n * v.dot(*n) * 2.0
     }
+
+    pub fn refract(uv: &Self, n: &Self, etai_over_etat: f64) -> Vec3 {
+        let cos_theta = -uv.dot(*n).min(1.0);
+        let r_out_perp = (*uv + *n * cos_theta) * etai_over_etat;
+        let r_out_parallel = *n * -(1.0 - r_out_perp.length_squared().abs()).sqrt();
+        r_out_perp + r_out_parallel
+    }
 }
 
 impl fmt::Display for Vec3 {

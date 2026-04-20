@@ -54,3 +54,24 @@ impl Material for Metal {
         }
     }
 }
+
+pub struct Dielectric {
+    pub refraction_index: f64,
+}
+
+impl Dielectric {
+    pub fn new(refraction_index: f64) -> Self {
+        Self { refraction_index }
+    }
+}
+
+impl Material for Dielectric {
+    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
+        let attenuation = Color::new(1.0, 1.0, 1.0);
+        let ri = if rec.front_face { 1.0 / self.refraction_index } else { self.refraction_index };
+        let unit_direction = &ray.dir.unit();
+        let refracted = Vec3::refract(unit_direction, &rec.normal, ri);
+        let scattered = Ray::new(rec.p, refracted);
+        Some((scattered, attenuation))
+    }
+}
