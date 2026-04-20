@@ -70,8 +70,19 @@ impl Material for Dielectric {
         let attenuation = Color::new(1.0, 1.0, 1.0);
         let ri = if rec.front_face { 1.0 / self.refraction_index } else { self.refraction_index };
         let unit_direction = &ray.dir.unit();
-        let refracted = Vec3::refract(unit_direction, &rec.normal, ri);
-        let scattered = Ray::new(rec.p, refracted);
+
+        let cos_theta = -unit_direction.dot(rec.normal).min(1.0);
+        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
+        let cannot_refract = ri * sin_theta > 1.0;
+        let mut direction = Vec3::origin();
+
+        if cannot_refract {
+            direction = Vec3::reflect(unit_direction, &rec.normal);
+        } else {
+            direction = Vec3::refract(unit_direction, &rec.normal, ri);
+        }
+
+        let scattered = Ray::new(rec.p, direction);
         Some((scattered, attenuation))
     }
 }

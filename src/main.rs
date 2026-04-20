@@ -24,7 +24,7 @@ fn main() {
     // Materials
     let ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
     let center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    let left = Dielectric::new(1.5);
+    let left = Dielectric::new(1.00 / 1.33);
     let right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
 
     // Objects
