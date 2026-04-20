@@ -48,15 +48,15 @@ impl Camera {
         let viewport_width: f64 = viewport_height * (self.image_width as f64 / self.image_height as f64);
 
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        let viewport_u: Vec3 = Vec3::new(viewport_width, 0.0, 0.0);
-        let viewport_v: Vec3 = Vec3::new(0.0, -viewport_height, 0.0);
+        let viewport_u = Vec3::new(viewport_width, 0.0, 0.0);
+        let viewport_v = Vec3::new(0.0, -viewport_height, 0.0);
 
         // Calculate the horizontal and vertical delta vectors from pixel to pixel.
         self.pixel_delta_u = viewport_u / self.image_width as f64;
         self.pixel_delta_v = viewport_v / self.image_height as f64;
 
         // Calculate the location of the upper left pixel.
-        let viewport_upper_left: Vec3 = self.center - Vec3::new(0.0, 0.0, focal_length) - viewport_u / 2.0 - viewport_v / 2.0;
+        let viewport_upper_left = self.center - Vec3::new(0.0, 0.0, focal_length) - viewport_u / 2.0 - viewport_v / 2.0;
         self.pixel00_loc = viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5;
     }
 
@@ -104,7 +104,7 @@ impl Camera {
             eprintln!("\rScanlines remaining: {remaining}");
 
             for i in 0..self.image_width {
-                let mut pixel_color: Color = Color::origin();
+                let mut pixel_color = Color::origin();
 
                 for _sample in 0..self.samples_per_pixel {
                     let ray: Ray = self.get_ray(i, j);

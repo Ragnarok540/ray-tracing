@@ -8,7 +8,7 @@ pub struct HitRecord<'a> {
     pub p: Point3,
     pub t: f64,
     pub normal: Vec3,
-    pub front_face: bool,
+    pub front_face: bool, // not used?
     pub material: &'a dyn Material,
 }
 
@@ -24,9 +24,7 @@ pub struct HittableList {
 
 impl HittableList {
     pub fn new() -> Self {
-        Self {
-            objects: vec![]
-        }
+        Self { objects: vec![] }
     }
 
     pub fn add(&mut self, object: impl Hittable + 'static) {
