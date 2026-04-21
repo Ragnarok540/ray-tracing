@@ -14,12 +14,18 @@ pub struct Camera {
     pub samples_per_pixel: usize, // Count of random samples for each pixel
     pub max_depth: usize,         // Maximum number of ray bounces into scene
     pub vfov: f64,                // Vertical view angle (field of view)
+    pub look_from: Point3,        // Point camera is looking from
+    pub look_at: Point3,          // Point camera is looking at
+    pub vup: Vec3,                 // Camera-relative "up" direction
     image_height: usize,      // Rendered image height
     pixel_samples_scale: f64, // Color scale factor for a sum of pixel samples
     center: Point3,           // Camera center
     pixel00_loc: Point3,      // Location of pixel 0, 0
     pixel_delta_u: Vec3,      // Offset to pixel to the right
     pixel_delta_v: Vec3,      // Offset to pixel below
+    u: Vec3,                  // Camera frame basis vectors
+    v: Vec3,                  // Camera frame basis vectors
+    w: Vec3,                  // Camera frame basis vectors
     rng: ThreadRng,
 }
 
@@ -31,12 +37,18 @@ impl Camera {
             samples_per_pixel: samples_per_pixel,
             max_depth: max_depth,
             vfov: 90.0,
+            look_from: Point3::origin(),
+            look_at: Point3::new(0.0, 0.0, -1.0),
+            vup: Vec3::new(0.0, 1.0, 0.0),
             image_height: 0,
             pixel_samples_scale: 0.0,
             center: Point3::origin(),
             pixel00_loc: Point3::origin(),
             pixel_delta_u: Vec3::origin(),
             pixel_delta_v: Vec3::origin(),
+            u: Vec3::origin(),
+            v: Vec3::origin(),
+            w: Vec3::origin(),
             rng: rand::rng(),
         }
     }
@@ -44,29 +56,38 @@ impl Camera {
     pub fn initialize(&mut self) {
         self.image_height = (self.image_width as f64 / self.aspect_ratio) as usize;
         self.pixel_samples_scale = 1.0 / self.samples_per_pixel as f64;
+        self.center = self.look_from;
 
         // Determine viewport dimensions.
-        let focal_length: f64 = 1.0;
+        let focal_length: f64 = (self.look_from - self.look_at).length();
         let theta: f64 = degrees_to_radians(self.vfov);
         let h = f64::tan(theta / 2.0);
         let viewport_height: f64 = 2.0 * h * focal_length;
         let viewport_width: f64 = viewport_height * (self.image_width as f64 / self.image_height as f64);
 
+        // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
+        self.w = (self.look_from - self.look_at).unit();
+        self.u = (self.vup.cross(self.w)).unit();
+        self.v = self.w.cross(self.u); 
+
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        let viewport_u = Vec3::new(viewport_width, 0.0, 0.0);
-        let viewport_v = Vec3::new(0.0, -viewport_height, 0.0);
+        let viewport_u: Vec3 = self.u * viewport_width;
+        let viewport_v: Vec3 = -self.v * viewport_height;
 
         // Calculate the horizontal and vertical delta vectors from pixel to pixel.
         self.pixel_delta_u = viewport_u / self.image_width as f64;
         self.pixel_delta_v = viewport_v / self.image_height as f64;
 
         // Calculate the location of the upper left pixel.
-        let viewport_upper_left = self.center - Vec3::new(0.0, 0.0, focal_length) - viewport_u / 2.0 - viewport_v / 2.0;
+        let viewport_upper_left: Vec3 = self.center - self.w * focal_length - viewport_u / 2.0 - viewport_v / 2.0;
         self.pixel00_loc = viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5;
     }
 
-    pub fn move_camera(&mut self, vfov: f64) {
+    pub fn move_camera(&mut self, vfov: f64, look_from: Point3, look_at: Point3, vup: Vec3) {
         self.vfov = vfov;
+        self.look_from = look_from;
+        self.look_at = look_at;
+        self.vup = vup;
     }
 
     fn ray_color(ray: &Ray, depth: usize, world: &dyn Hittable) -> Color {
