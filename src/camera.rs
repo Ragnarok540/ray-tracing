@@ -4,6 +4,7 @@ use crate::vec3::{Vec3};
 use crate::ray::{Ray};
 use crate::hittable::{Hittable};
 use crate::interval::{Interval};
+use crate::utils::{degrees_to_radians};
 use Vec3 as Point3;
 use Vec3 as Color;
 
@@ -12,6 +13,7 @@ pub struct Camera {
     pub image_width: usize,       // Rendered image width in pixel count
     pub samples_per_pixel: usize, // Count of random samples for each pixel
     pub max_depth: usize,         // Maximum number of ray bounces into scene
+    pub vfov: f64,                // Vertical view angle (field of view)
     image_height: usize,      // Rendered image height
     pixel_samples_scale: f64, // Color scale factor for a sum of pixel samples
     center: Point3,           // Camera center
@@ -28,6 +30,7 @@ impl Camera {
             image_width: image_width,
             samples_per_pixel: samples_per_pixel,
             max_depth: max_depth,
+            vfov: 90.0,
             image_height: 0,
             pixel_samples_scale: 0.0,
             center: Point3::origin(),
@@ -44,7 +47,9 @@ impl Camera {
 
         // Determine viewport dimensions.
         let focal_length: f64 = 1.0;
-        let viewport_height: f64 = 2.0;
+        let theta: f64 = degrees_to_radians(self.vfov);
+        let h = f64::tan(theta / 2.0);
+        let viewport_height: f64 = 2.0 * h * focal_length;
         let viewport_width: f64 = viewport_height * (self.image_width as f64 / self.image_height as f64);
 
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
@@ -58,6 +63,10 @@ impl Camera {
         // Calculate the location of the upper left pixel.
         let viewport_upper_left = self.center - Vec3::new(0.0, 0.0, focal_length) - viewport_u / 2.0 - viewport_v / 2.0;
         self.pixel00_loc = viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5;
+    }
+
+    pub fn move_camera(&mut self, vfov: f64) {
+        self.vfov = vfov;
     }
 
     fn ray_color(ray: &Ray, depth: usize, world: &dyn Hittable) -> Color {

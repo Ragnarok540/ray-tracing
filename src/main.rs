@@ -21,22 +21,30 @@ fn main() {
     // World
     let mut world = HittableList::new();
 
+    let r = f64::cos(std::f64::consts::PI / 4.0);
+
     // Materials
-    let ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
-    let center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    let left = Dielectric::new(1.5);
-    let bubble = Dielectric::new(1.0 / 1.5);
-    let right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
+    // let ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
+    // let center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
+    // let left = Dielectric::new(1.5);
+    // let bubble = Dielectric::new(1.0 / 1.5);
+    // let right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
+    let left = Lambertian::new(Color::new(0.0, 0.0, 1.0));
+    let right = Lambertian::new(Color::new(1.0, 0.0, 0.0));
 
     // Objects
-    world.add(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, ground));
-    world.add(Sphere::new(Point3::new(0.0, 0.0, -1.2), 0.5, center));
-    world.add(Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, left));
-    world.add(Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.4, bubble));
-    world.add(Sphere::new(Point3::new(1.0, 0.0, -1.0), 0.5, right));
+    // world.add(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, ground));
+    // world.add(Sphere::new(Point3::new(0.0, 0.0, -1.2), 0.5, center));
+    // world.add(Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, left));
+    // world.add(Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.4, bubble));
+    // world.add(Sphere::new(Point3::new(1.0, 0.0, -1.0), 0.5, right));
+    world.add(Sphere::new(Point3::new(-r, 0.0, -1.0), r, left));
+    world.add(Sphere::new(Point3::new(r, 0.0, -1.0), r, right));
+
 
     // Camera
     let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50);
+    camera.move_camera(90.0);
     camera.render(&world);
 }
 
