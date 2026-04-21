@@ -45,7 +45,7 @@ impl<M: Material> Hittable for Sphere<M> {
         let outward_normal = (p - self.center) / self.radius;
         let front_face = ray.dir.dot(outward_normal) < 0.0;
         let normal = if front_face { outward_normal } else { -outward_normal };
-        let hr = HitRecord{ p, t, normal, front_face, material: &self.material };
+        let hr = HitRecord::new(t, p, front_face, normal, &self.material);
 
         return Some(hr);
     }

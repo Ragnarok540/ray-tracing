@@ -1,6 +1,7 @@
 use crate::vec3::{Vec3};
 use crate::ray::{Ray};
 use crate::hittable::{HitRecord};
+use crate::utils::{random_f64};
 use Vec3 as Color;
 
 pub trait Material {
@@ -56,12 +57,21 @@ impl Material for Metal {
 }
 
 pub struct Dielectric {
+    // Refractive index in vacuum or air, or the ratio of the material's refractive index over
+    // the refractive index of the enclosing media
     pub refraction_index: f64,
 }
 
 impl Dielectric {
     pub fn new(refraction_index: f64) -> Self {
         Self { refraction_index }
+    }
+
+    pub fn reflectance(cosine: f64, refraction_index: f64) -> f64 {
+        // Use Schlick's approximation for reflectance.
+        let r0 = (1.0 - refraction_index) / (1.0 + refraction_index);
+        let r1 = r0 * r0;
+        r1 + (1.0 - r1) * (1.0 - cosine).powf(5.0)
     }
 }
 
@@ -76,7 +86,7 @@ impl Material for Dielectric {
         let cannot_refract = ri * sin_theta > 1.0;
         let mut direction = Vec3::origin();
 
-        if cannot_refract {
+        if cannot_refract || Self::reflectance(cos_theta, ri) > random_f64() {
             direction = Vec3::reflect(unit_direction, &rec.normal);
         } else {
             direction = Vec3::refract(unit_direction, &rec.normal, ri);

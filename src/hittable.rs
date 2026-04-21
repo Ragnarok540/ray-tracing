@@ -5,11 +5,17 @@ use crate::material::{Material};
 use Vec3 as Point3;
 
 pub struct HitRecord<'a> {
-    pub p: Point3,
     pub t: f64,
+    pub p: Point3,
+    pub front_face: bool,
     pub normal: Vec3,
-    pub front_face: bool, // not used?
     pub material: &'a dyn Material,
+}
+
+impl<'a> HitRecord<'a> {
+    pub fn new(t: f64, p: Point3, front_face: bool, normal: Vec3, material: &'a dyn Material) -> Self {
+        Self { t, p, front_face, normal, material }
+    }
 }
 
 pub trait Hittable {
