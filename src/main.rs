@@ -13,7 +13,8 @@ use vec3::{Vec3};
 use sphere::{Sphere};
 use hittable::{HittableList};
 use camera::{Camera};
-use material::{Lambertian, Metal, Dielectric};
+use material::{Material, Lambertian, Metal, Dielectric};
+use utils::{random_f64, random_range_f64};
 use Vec3 as Point3;
 use Vec3 as Color;
 
@@ -21,25 +22,48 @@ fn main() {
     // World
     let mut world = HittableList::new();
 
-    // Materials
-    let ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
-    let center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
-    let left = Dielectric::new(1.5);
-    let bubble = Dielectric::new(1.0 / 1.5);
-    let right = Metal::new(Color::new(0.8, 0.6, 0.2), 1.0);
+    let ground = Lambertian::new(Color::new(0.5, 0.5, 0.5));
+    world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, ground));
 
-    // Objects
-    world.add(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0, ground));
-    world.add(Sphere::new(Point3::new(0.0, 0.0, -1.2), 0.5, center));
-    world.add(Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, left));
-    world.add(Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.4, bubble));
-    world.add(Sphere::new(Point3::new(1.0, 0.0, -1.0), 0.5, right));
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_mat = random_f64();
+            let center = Point3::new(a as f64 + 0.9 * random_f64(), 0.2, b as f64 + 0.9 * random_f64());
+            if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+                if choose_mat < 0.8 {
+                    // diffuse
+                    let albedo = Color::random() * Color::random();
+                    let sphere_material = Lambertian::new(albedo);
+                    world.add(Sphere::new(center, 0.2, sphere_material));
+                } else if choose_mat < 0.95 {
+                    // metal
+                    let albedo = Color::random_range(0.5, 1.0);
+                    let fuzz = random_range_f64(0.0, 0.5);
+                    let sphere_material = Metal::new(albedo, fuzz);
+                    world.add(Sphere::new(center, 0.2, sphere_material));
+                } else {
+                    // glass
+                    let sphere_material = Dielectric::new(1.5);
+                    world.add(Sphere::new(center, 0.2, sphere_material));
+                }
+            }
+        }
+    }
+
+    let glass = Dielectric::new(1.5);
+    world.add(Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, glass));
+
+    let diffuse = Lambertian::new(Color::new(0.4, 0.2, 0.1));
+    world.add(Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, diffuse));
+
+    let metal = Metal::new(Color::new(0.7, 0.6, 0.5), 0.0);
+    world.add(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, metal));
 
     // Camera
-    let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50);
-    camera.move_camera(20.0, Point3::new(-2.0, 2.0, 1.0), Point3::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0));
-    camera.depth_of_field(10.0, 3.4);
-    camera.render(&world);
+    let mut camera = Camera::new(16.0 / 9.0, 1200, 10, 50); // 10 -> 500
+    camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.depth_of_field(0.6, 10.0);
+    camera.render(&world);    
 }
 
 // cargo build

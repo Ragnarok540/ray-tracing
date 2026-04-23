@@ -73,7 +73,7 @@ impl Vec3 {
         println!("{r} {g} {b}")
     }
 
-    fn random() -> Self {
+    pub fn random() -> Self {
         Self {
             e: [
                 random_f64(),
@@ -83,7 +83,7 @@ impl Vec3 {
         }
     }
 
-    fn random_range(min: f64, max: f64) -> Self {
+    pub fn random_range(min: f64, max: f64) -> Self {
         Self {
             e: [
                 random_range_f64(min, max),
