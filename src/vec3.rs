@@ -103,6 +103,15 @@ impl Vec3 {
         }
     }
 
+    pub fn random_in_unit_disk() -> Self {
+        loop {
+            let p = Vec3::new(random_range_f64(-1.0, 1.0), random_range_f64(-1.0, 1.0), 0.0);
+            if p.length_squared() < 1.0 {
+                return p;
+            }
+        }
+    }
+
     pub fn random_on_hemisphere(normal: &Self) -> Self {
         let on_unit_sphere = Self::random_unit_vector();
         if on_unit_sphere.dot(*normal) > 0.0 { // In the same hemisphere as the normal

@@ -21,8 +21,6 @@ fn main() {
     // World
     let mut world = HittableList::new();
 
-    let r = f64::cos(std::f64::consts::PI / 4.0);
-
     // Materials
     let ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
     let center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
@@ -39,7 +37,8 @@ fn main() {
 
     // Camera
     let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50);
-    camera.move_camera(90.0, Point3::new(-2.0, 2.0, 1.0), Point3::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.move_camera(20.0, Point3::new(-2.0, 2.0, 1.0), Point3::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.depth_of_field(10.0, 3.4);
     camera.render(&world);
 }
 

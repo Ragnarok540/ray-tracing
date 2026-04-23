@@ -84,7 +84,7 @@ impl Material for Dielectric {
         let cos_theta = -unit_direction.dot(rec.normal).min(1.0);
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
         let cannot_refract = ri * sin_theta > 1.0;
-        let mut direction = Vec3::origin();
+        let direction;
 
         if cannot_refract || Self::reflectance(cos_theta, ri) > random_f64() {
             direction = Vec3::reflect(unit_direction, &rec.normal);
