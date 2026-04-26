@@ -6,7 +6,7 @@ use crate::vec3::{Vec3};
 use crate::ray::{Ray};
 use crate::hittable::{Hittable};
 use crate::interval::{Interval};
-use crate::utils::{degrees_to_radians};
+use crate::utils::{degrees_to_radians, random_f64};
 use Vec3 as Point3;
 use Vec3 as Color;
 
@@ -123,7 +123,7 @@ impl Camera {
             }
         }
 
-        let unit_direction = ray.dir.unit();
+        let unit_direction = ray.direction.unit();
         let a = (unit_direction.y() + 1.0) * 0.5;
         Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a
     }
@@ -148,7 +148,8 @@ impl Camera {
                          + (self.pixel_delta_v * (j as f64 + offset.y()));
         let ray_origin: Vec3 = if self.defocus_angle <= 0.0 { self.center } else { self.defocus_disk_sample() };
         let ray_direction: Vec3 = pixel_sample - ray_origin;
-        Ray::new(ray_origin, ray_direction)
+        let ray_time = random_f64();
+        Ray::new(ray_origin, ray_direction, ray_time)
     }
 
     pub fn render(&mut self, world: &dyn Hittable) {

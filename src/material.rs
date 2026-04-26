@@ -19,7 +19,7 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, _ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
+    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
         let mut scatter_direction = rec.normal + Vec3::random_unit_vector();
 
         // Catch degenerate scatter direction
@@ -27,7 +27,7 @@ impl Material for Lambertian {
             scatter_direction = rec.normal;
         }
 
-        let scattered = Ray::new(rec.p, scatter_direction);
+        let scattered = Ray::new(rec.p, scatter_direction, ray.time);
         Some((scattered, self.albedo))
     }
 }
@@ -45,10 +45,10 @@ impl Metal {
 
 impl Material for Metal {
     fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
-        let mut reflected = Vec3::reflect(&ray.dir, &rec.normal);
+        let mut reflected = Vec3::reflect(&ray.direction, &rec.normal);
         reflected = reflected.unit() + Vec3::random_unit_vector() * self.fuzz;
-        let scattered = Ray::new(rec.p, reflected);
-        if scattered.dir.dot(rec.normal) > 0.0 {
+        let scattered = Ray::new(rec.p, reflected, ray.time);
+        if scattered.direction.dot(rec.normal) > 0.0 {
             return Some((scattered, self.albedo));
         } else {
             return None;
@@ -79,7 +79,7 @@ impl Material for Dielectric {
     fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
         let attenuation = Color::new(1.0, 1.0, 1.0);
         let ri = if rec.front_face { 1.0 / self.refraction_index } else { self.refraction_index };
-        let unit_direction = &ray.dir.unit();
+        let unit_direction = &ray.direction.unit();
 
         let cos_theta = -unit_direction.dot(rec.normal).min(1.0);
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
@@ -92,7 +92,7 @@ impl Material for Dielectric {
             direction = Vec3::refract(unit_direction, &rec.normal, ri);
         }
 
-        let scattered = Ray::new(rec.p, direction);
+        let scattered = Ray::new(rec.p, direction, ray.time);
         Some((scattered, attenuation))
     }
 }

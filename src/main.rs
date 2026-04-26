@@ -34,7 +34,8 @@ fn main() {
                     // diffuse
                     let albedo = Color::random() * Color::random();
                     let sphere_material = Lambertian::new(albedo);
-                    world.add(Sphere::new(center, 0.2, sphere_material));
+                    let center2 = center + Vec3::new(0.0, random_range_f64(0.0, 0.5), 0.0);
+                    world.add(Sphere::moving(center, center2, 0.2, sphere_material));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Color::random_range(0.5, 1.0);
@@ -60,7 +61,7 @@ fn main() {
     world.add(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, metal));
 
     // Camera
-    let mut camera = Camera::new(16.0 / 9.0, 1200, 10, 50); // 10 -> 500
+    let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50); // 10 -> 500
     camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.6, 10.0);
     camera.render(&world);    
