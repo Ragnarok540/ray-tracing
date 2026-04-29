@@ -8,6 +8,7 @@ mod interval;
 mod camera;
 mod utils;
 mod material;
+mod aabb;
 
 use vec3::{Vec3};
 use sphere::{Sphere};
@@ -61,7 +62,7 @@ fn main() {
     world.add(Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, metal));
 
     // Camera
-    let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50); // 10 -> 500
+    let mut camera = Camera::new(16.0 / 9.0, 400, 10, 50); // 10 -> 500
     camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.6, 10.0);
     camera.render(&world);    

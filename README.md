@@ -11,3 +11,4 @@
 ## Other Implementations (for inspiration purposes)
 
 - https://github.com/fralken/ray-tracing-in-one-weekend
+- https://github.com/fralken/ray-tracing-the-next-week

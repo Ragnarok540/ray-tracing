@@ -3,23 +3,31 @@ use crate::ray::{Ray};
 use crate::hittable::{HitRecord, Hittable};
 use crate::interval::{Interval};
 use crate::material::{Material};
+use crate::aabb::{AABB};
 use Vec3 as Point3;
 
 pub struct Sphere<M: Material> {
     pub center: Ray,
     pub radius: f64,
     pub material: M,
+    pub bbox: AABB,
 }
 
 impl<M: Material> Sphere<M> {
     pub fn new(static_center: Point3, radius: f64, material: M) -> Self {
         let center = Ray::new(static_center, Vec3::origin(), 0.0);
-        Self { center, radius: radius.max(0.0), material }
+        let rvec = Vec3::new(radius, radius, radius);
+        let bbox = AABB::two_points(static_center - rvec, static_center + rvec);
+        Self { center, radius: radius.max(0.0), material, bbox }
     }
 
     pub fn moving(center1: Point3, center2: Point3, radius: f64, material: M) -> Self {
-        let center = Ray::new(center1, center2 - center1, 0.0); 
-        Self { center, radius: radius.max(0.0), material }
+        let center = Ray::new(center1, center2 - center1, 0.0);
+        let rvec = Vec3::new(radius, radius, radius);
+        let box0 = AABB::two_points(center.at(0.0) - rvec, center.at(0.0) + rvec);
+        let box1 = AABB::two_points(center.at(1.0) - rvec, center.at(1.0) + rvec);
+        let bbox = AABB::two_aabb(box0, box1);
+        Self { center, radius: radius.max(0.0), material, bbox }
     }
 }
 
@@ -55,5 +63,9 @@ impl<M: Material> Hittable for Sphere<M> {
         let hr = HitRecord::new(t, p, front_face, normal, &self.material);
 
         return Some(hr);
+    }
+
+    fn bounding_box(&self) -> AABB {
+        self.bbox
     }
 }

@@ -2,6 +2,7 @@ use crate::vec3::{Vec3};
 use crate::ray::{Ray};
 use crate::interval::{Interval};
 use crate::material::{Material};
+use crate::aabb::{AABB};
 use Vec3 as Point3;
 
 pub struct HitRecord<'a> {
@@ -20,20 +21,23 @@ impl<'a> HitRecord<'a> {
 
 pub trait Hittable {
     fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>>;
+    fn bounding_box(&self) -> AABB;
 }
 
 // https://refactoring.guru/design-patterns/composite/rust/example
 
 pub struct HittableList {
     pub objects: Vec<Box<dyn Hittable>>,
+    pub bbox: AABB,
 }
 
 impl HittableList {
     pub fn new() -> Self {
-        Self { objects: vec![] }
+        Self { objects: vec![], bbox: AABB::empty() }
     }
 
     pub fn add(&mut self, object: impl Hittable + 'static) {
+        self.bbox = AABB::two_aabb(self.bbox, object.bounding_box());
         self.objects.push(Box::new(object));
     }
 }
@@ -51,5 +55,9 @@ impl Hittable for HittableList {
         }
 
         hit_anything
+    }
+
+    fn bounding_box(&self) -> AABB {
+        self.bbox
     }
 }
