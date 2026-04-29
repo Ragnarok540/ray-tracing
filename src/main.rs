@@ -9,6 +9,7 @@ mod camera;
 mod utils;
 mod material;
 mod aabb;
+mod bvh;
 
 use vec3::{Vec3};
 use sphere::{Sphere};
