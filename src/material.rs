@@ -9,6 +9,7 @@ pub trait Material {
     fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)>;
 }
 
+#[derive(Copy, Clone)]
 pub struct Lambertian<T: Texture> {
     pub texture: T,
 }

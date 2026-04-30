@@ -1,5 +1,3 @@
-// use math::round;
-
 use crate::vec3::{Vec3};
 use Vec3 as Color;
 use Vec3 as Point3;
@@ -8,6 +6,7 @@ pub trait Texture {
     fn value(&self, u: f64, v:f64, p: Point3) -> Color;
 }
 
+#[derive(Copy, Clone)]
 pub struct SolidColor {
     pub albedo: Color,
 }
@@ -28,6 +27,7 @@ impl Texture for SolidColor {
     }
 }
 
+#[derive(Copy, Clone)]
 pub struct CheckerTexture<T: Texture, U: Texture> {
     pub inv_scale: f64,
     pub even: T,
@@ -46,15 +46,12 @@ impl<T: Texture, U: Texture> CheckerTexture<T, U> {
 
 impl<T: Texture, U: Texture> Texture for CheckerTexture<T, U> {
     fn value(&self, u: f64, v:f64, p: Point3) -> Color {
-        let x = (self.inv_scale * p.x()).floor() as usize;
-        let y = (self.inv_scale * p.y()).floor() as usize;
-        let z = (self.inv_scale * p.z()).floor() as usize;
-        let is_even = (x + y + z) % 2 == 0;
+        let sines = f64::sin(10.0 * p.x()) * f64::sin(10.0 * p.y()) * f64::sin(10.0 * p.z());
 
-        if is_even {
-            self.even.value(u, v, p)
-        } else {
+        if sines < 0.0 {
             self.odd.value(u, v, p)
+        } else {
+            self.even.value(u, v, p)
         }
     }
 }

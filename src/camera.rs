@@ -154,17 +154,18 @@ impl Camera {
 
     pub fn render(&mut self, world: &dyn Hittable) {
         self.initialize();
-        let mut sys_time = SystemTime::now();
+        // let mut sys_time = SystemTime::now();
 
         println!("P3\n{} {}\n255", self.image_width, self.image_height);
 
         for j in 0..self.image_height {
             let remaining: usize = self.image_height - j;
-            let new_sys_time = SystemTime::now();
-            let difference = new_sys_time.duration_since(sys_time).expect("Clock may have gone backwards");
-            sys_time = new_sys_time;
-            let seconds = difference.as_secs_f64();
-            eprintln!("\rScanlines remaining: {remaining}, {seconds} seconds since last scanline.");
+            // let new_sys_time = SystemTime::now();
+            // let difference = new_sys_time.duration_since(sys_time).expect("Clock may have gone backwards");
+            // sys_time = new_sys_time;
+            // let seconds = difference.as_secs_f64();
+            // eprintln!("\rScanlines remaining: {remaining}, {seconds} seconds since last scanline.");
+            eprintln!("\rScanlines remaining: {remaining}");
 
             for i in 0..self.image_width {
                 let mut pixel_color = Color::origin();

@@ -16,8 +16,8 @@ pub struct HitRecord<'a> {
 }
 
 impl<'a> HitRecord<'a> {
-    pub fn new(t: f64, p: Point3, front_face: bool, normal: Vec3, material: &'a dyn Material) -> Self {
-        Self { t, p, front_face, normal, material, u: 0.0, v: 0.0 }
+    pub fn new(t: f64, p: Point3, front_face: bool, normal: Vec3, material: &'a dyn Material, u: f64, v: f64) -> Self {
+        Self { t, p, front_face, normal, material, u, v }
     }
 }
 

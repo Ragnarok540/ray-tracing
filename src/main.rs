@@ -23,7 +23,7 @@ use crate::texture::{CheckerTexture, SolidColor};
 use Vec3 as Point3;
 use Vec3 as Color;
 
-fn main() {
+fn bouncing_spheres() {
     // World
     let mut world = HittableList::new();
 
@@ -73,8 +73,31 @@ fn main() {
 
     let new_world = BVH::new(world.objects);
     camera.render(&new_world);
+}
 
-    // camera.render(&world);
+fn checkered_spheres() {
+    let mut world = HittableList::new();
+
+    let checker = CheckerTexture::new(0.32, SolidColor::new(Color::new(0.2, 0.3, 0.1)), SolidColor::new(Color::new(0.9, 0.9, 0.9)));
+    let ground = Lambertian::new(checker);
+    world.add(Sphere::new(Point3::new(0.0, -10.0, 0.0), 10.0, ground));
+    world.add(Sphere::new(Point3::new(0.0, 10.0, 0.0), 10.0, ground));
+
+    let mut camera = Camera::new(16.0 / 9.0, 400, 50, 50); // 10 -> 500
+    camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.depth_of_field(0.0, 10.0);
+
+    camera.render(&world);
+}
+
+fn main() {
+    let scene = 2;
+
+    match scene {
+        1 => bouncing_spheres(),
+        2 => checkered_spheres(),
+        _ => panic!["scene does not exist"],
+    }
 }
 
 // cargo build
