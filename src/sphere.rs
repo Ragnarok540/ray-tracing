@@ -37,9 +37,12 @@ impl<M: Material> Sphere<M> {
         //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
         //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
         //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
-        let theta = f64::acos(-p.y());
-        let phi = f64::atan2(-p.z(), p.x());
-        (phi / 2.0 * std::f64::consts::PI, theta / std::f64::consts::PI)
+
+        let phi = p.z().atan2(p.x());
+        let theta = p.y().asin();
+        let u = 1.0 - (phi + std::f64::consts::PI) / (2.0 * std::f64::consts::PI);
+        let v = (theta + std::f64::consts::FRAC_PI_2) / std::f64::consts::PI;
+        (u, v)
     }
 }
 

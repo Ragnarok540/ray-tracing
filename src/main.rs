@@ -12,6 +12,8 @@ mod aabb;
 mod bvh;
 mod texture;
 
+use image;
+
 use vec3::{Vec3};
 use sphere::{Sphere};
 use hittable::{HittableList};
@@ -19,7 +21,7 @@ use camera::{Camera};
 use material::{Material, Lambertian, Metal, Dielectric};
 use utils::{random_f64, random_range_f64};
 use bvh::{BVH};
-use crate::texture::{CheckerTexture, SolidColor};
+use crate::texture::{CheckerTexture, SolidColor, ImageTexture};
 use Vec3 as Point3;
 use Vec3 as Color;
 
@@ -90,12 +92,29 @@ fn checkered_spheres() {
     camera.render(&world);
 }
 
+fn earth() {
+    let mut world = HittableList::new();
+    let image = image::open("res/earthmap.png").expect("image not found").to_rgb8();
+    let (nx, ny) = image.dimensions();
+    let data = image.into_raw();
+    let texture = ImageTexture::new(data, nx, ny);
+    let earth = Sphere::new(Point3::new(0.0, 0.0, 0.0), 2.0, Lambertian::new(texture));
+    world.add(earth);
+
+    let mut camera = Camera::new(16.0 / 9.0, 400, 50, 50); // 10 -> 500
+    camera.move_camera(20.0, Point3::new(0.0, 0.0, 12.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.depth_of_field(0.0, 10.0);
+
+    camera.render(&world);
+}
+
 fn main() {
-    let scene = 2;
+    let scene = 3;
 
     match scene {
         1 => bouncing_spheres(),
         2 => checkered_spheres(),
+        3 => earth(),
         _ => panic!["scene does not exist"],
     }
 }
