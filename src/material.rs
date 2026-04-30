@@ -2,23 +2,24 @@ use crate::vec3::{Vec3};
 use crate::ray::{Ray};
 use crate::hittable::{HitRecord};
 use crate::utils::{random_f64};
+use crate::texture::{Texture, SolidColor};
 use Vec3 as Color;
 
 pub trait Material {
     fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)>;
 }
 
-pub struct Lambertian {
-    pub albedo: Color,
+pub struct Lambertian<T: Texture> {
+    pub texture: T,
 }
 
-impl Lambertian {
-    pub fn new(albedo: Color) -> Self {
-        Self { albedo }
+impl<T: Texture> Lambertian<T> {
+    pub fn new(texture: T) -> Self {
+        Self { texture }
     }
 }
 
-impl Material for Lambertian {
+impl<T: Texture> Material for Lambertian<T> {
     fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
         let mut scatter_direction = rec.normal + Vec3::random_unit_vector();
 
@@ -28,7 +29,8 @@ impl Material for Lambertian {
         }
 
         let scattered = Ray::new(rec.p, scatter_direction, ray.time);
-        Some((scattered, self.albedo))
+        let attenuation = self.texture.value(rec.u, rec.v, rec.p);
+        Some((scattered, attenuation))
     }
 }
 

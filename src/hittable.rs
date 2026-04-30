@@ -11,11 +11,13 @@ pub struct HitRecord<'a> {
     pub front_face: bool,
     pub normal: Vec3,
     pub material: &'a dyn Material,
+    pub u: f64,
+    pub v: f64,
 }
 
 impl<'a> HitRecord<'a> {
     pub fn new(t: f64, p: Point3, front_face: bool, normal: Vec3, material: &'a dyn Material) -> Self {
-        Self { t, p, front_face, normal, material }
+        Self { t, p, front_face, normal, material, u: 0.0, v: 0.0 }
     }
 }
 
