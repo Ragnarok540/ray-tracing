@@ -39,11 +39,35 @@ impl AABB {
         }
     }
 
+    pub fn universe() -> Self {
+        Self {
+            x: Interval::universe(),
+            y: Interval::universe(),
+            z: Interval::universe(),
+        }
+    }
+
     pub fn axis_interval(&self, n: usize) -> Interval {
         match n {
             1 => return self.y.clone(),
             2 => return self.z.clone(),
             _ => return self.x.clone(),
+        }
+    }
+
+    pub fn longest_axis(&self) -> usize {
+        if self.x.size() > self.y.size() {
+            if self.x.size() > self.z.size() {
+                return 0;
+            } else {
+                return 2;
+            }
+        } else {
+            if self.y.size() > self.z.size() {
+                return 1;
+            } else {
+                return 2;
+            }
         }
     }
 

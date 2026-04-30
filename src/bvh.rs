@@ -4,7 +4,6 @@ use crate::ray::{Ray};
 use crate::hittable::{HitRecord, Hittable};
 use crate::interval::{Interval};
 use crate::aabb::{AABB};
-use crate::utils::{random_range_f64};
 
 enum BVHNode {
     Branch { left: Box<BVH>, right: Box<BVH> },
@@ -18,7 +17,13 @@ pub struct BVH {
 
 impl BVH {
     pub fn new(mut objects: Vec<Box<dyn Hittable>>) -> BVH {
-        let axis = random_range_f64(0.0, 3.0) as usize;
+        let mut bbox = AABB::empty();
+
+        for object in objects.iter() {
+            bbox = AABB::two_aabb(bbox, object.bounding_box());
+        }
+
+        let axis = bbox.longest_axis();
         let len = objects.len();
 
         match len {
