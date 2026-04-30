@@ -17,6 +17,7 @@ use hittable::{HittableList};
 use camera::{Camera};
 use material::{Material, Lambertian, Metal, Dielectric};
 use utils::{random_f64, random_range_f64};
+use bvh::{BVH};
 use Vec3 as Point3;
 use Vec3 as Color;
 
@@ -66,7 +67,11 @@ fn main() {
     let mut camera = Camera::new(16.0 / 9.0, 400, 10, 50); // 10 -> 500
     camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.6, 10.0);
-    camera.render(&world);    
+
+    let new_world = BVH::new(world.objects);
+    camera.render(&new_world);
+
+    // camera.render(&world);
 }
 
 // cargo build
