@@ -101,6 +101,7 @@ impl Texture for ImageTexture {
     }
 }
 
+#[derive(Clone)]
 pub struct NoiseTexture {
     noise: Perlin,
 }
