@@ -17,6 +17,7 @@ pub struct BVH {
 
 impl BVH {
     pub fn new(mut objects: Vec<Box<dyn Hittable>>) -> BVH {
+        // Build the bounding box of the span of source objects.
         let mut bbox = AABB::empty();
 
         for object in objects.iter() {
@@ -30,14 +31,12 @@ impl BVH {
             0 => panic!["no elements in scene"],
             1 => {
                 let leaf = objects.pop().unwrap();
-                let bbox = leaf.bounding_box();
                 BVH { tree: BVHNode::Leaf(leaf), bbox }
             },
             _ => {
                 objects.sort_by(|a, b| Self::box_compare(a, b, axis));
                 let left = BVH::new(objects.drain(len / 2..).collect());
                 let right = BVH::new(objects);
-                let bbox = AABB::two_aabb(left.bounding_box(), right.bounding_box());
                 BVH { tree: BVHNode::Branch { left: Box::new(left), right: Box::new(right) }, bbox }
             }
         }
@@ -46,11 +45,13 @@ impl BVH {
     fn box_compare(a: &Box<dyn Hittable>, b: &Box<dyn Hittable>, axis_index: usize) -> Ordering {
         let a_axis_interval = a.bounding_box().axis_interval(axis_index);
         let b_axis_interval = b.bounding_box().axis_interval(axis_index);
+
         if a_axis_interval.min < b_axis_interval.min {
             return Ordering::Less
         } else {
             return Ordering::Greater
-        };
+        }
+
         Ordering::Equal
     }
 }

@@ -11,6 +11,7 @@ mod material;
 mod aabb;
 mod bvh;
 mod texture;
+mod perlin;
 
 use image;
 
@@ -21,12 +22,11 @@ use camera::{Camera};
 use material::{Material, Lambertian, Metal, Dielectric};
 use utils::{random_f64, random_range_f64};
 use bvh::{BVH};
-use crate::texture::{CheckerTexture, SolidColor, ImageTexture};
+use crate::texture::{CheckerTexture, SolidColor, ImageTexture, NoiseTexture};
 use Vec3 as Point3;
 use Vec3 as Color;
 
 fn bouncing_spheres() {
-    // World
     let mut world = HittableList::new();
 
     let checker = CheckerTexture::new(0.32, SolidColor::new(Color::new(0.2, 0.3, 0.1)), SolidColor::new(Color::new(0.9, 0.9, 0.9)));
@@ -74,7 +74,7 @@ fn bouncing_spheres() {
     camera.depth_of_field(0.6, 10.0);
 
     let new_world = BVH::new(world.objects);
-    camera.render(&new_world);
+    camera.render(&new_world, false);
 }
 
 fn checkered_spheres() {
@@ -85,36 +85,53 @@ fn checkered_spheres() {
     world.add(Sphere::new(Point3::new(0.0, -10.0, 0.0), 10.0, ground));
     world.add(Sphere::new(Point3::new(0.0, 10.0, 0.0), 10.0, ground));
 
-    let mut camera = Camera::new(16.0 / 9.0, 400, 50, 50); // 10 -> 500
+    let mut camera = Camera::new(16.0 / 9.0, 400, 50, 50);
     camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.0, 10.0);
 
-    camera.render(&world);
+    camera.render(&world, false);
 }
 
 fn earth() {
     let mut world = HittableList::new();
+
     let image = image::open("res/earthmap.png").expect("image not found").to_rgb8();
-    let (nx, ny) = image.dimensions();
+    let (width, height) = image.dimensions();
     let data = image.into_raw();
-    let texture = ImageTexture::new(data, nx, ny);
+    let texture = ImageTexture::new(data, width, height);
     let earth = Sphere::new(Point3::new(0.0, 0.0, 0.0), 2.0, Lambertian::new(texture));
     world.add(earth);
 
-    let mut camera = Camera::new(16.0 / 9.0, 400, 50, 50); // 10 -> 500
+    let mut camera = Camera::new(16.0 / 9.0, 400, 50, 50);
     camera.move_camera(20.0, Point3::new(0.0, 0.0, 12.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.0, 10.0);
 
-    camera.render(&world);
+    camera.render(&world, false);
+}
+
+fn perlin_spheres() {
+    let mut world = HittableList::new();
+
+    let pertext1 = NoiseTexture::new();
+    world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, Lambertian::new(pertext1)));
+    let pertext2 = NoiseTexture::new();
+    world.add(Sphere::new(Point3::new(0.0, 2.0, 0.0), 2.0, Lambertian::new(pertext2)));
+
+    let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50);
+    camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.depth_of_field(0.0, 10.0);
+
+    camera.render(&world, false);
 }
 
 fn main() {
-    let scene = 3;
+    let scene = 4;
 
     match scene {
         1 => bouncing_spheres(),
         2 => checkered_spheres(),
         3 => earth(),
+        4 => perlin_spheres(),
         _ => panic!["scene does not exist"],
     }
 }

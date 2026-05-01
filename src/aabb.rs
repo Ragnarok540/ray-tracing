@@ -56,6 +56,7 @@ impl AABB {
     }
 
     pub fn longest_axis(&self) -> usize {
+        // Returns the index of the longest axis of the bounding box.
         if self.x.size() > self.y.size() {
             if self.x.size() > self.z.size() {
                 return 0;
