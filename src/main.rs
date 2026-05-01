@@ -112,7 +112,7 @@ fn earth() {
 fn perlin_spheres() {
     let mut world = HittableList::new();
 
-    let pertext = NoiseTexture::new();
+    let pertext = NoiseTexture::new(4.0);
     world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, Lambertian::new(pertext.clone())));
     world.add(Sphere::new(Point3::new(0.0, 2.0, 0.0), 2.0, Lambertian::new(pertext)));
 
