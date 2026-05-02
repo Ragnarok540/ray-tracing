@@ -51,8 +51,6 @@ impl BVH {
         } else {
             return Ordering::Greater
         }
-
-        Ordering::Equal
     }
 }
 

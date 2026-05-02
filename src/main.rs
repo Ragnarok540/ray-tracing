@@ -19,10 +19,10 @@ use vec3::{Vec3};
 use sphere::{Sphere};
 use hittable::{HittableList};
 use camera::{Camera};
-use material::{Material, Lambertian, Metal, Dielectric};
+use material::{Lambertian, Metal, Dielectric};
 use utils::{random_f64, random_range_f64};
 use bvh::{BVH};
-use crate::texture::{CheckerTexture, SolidColor, ImageTexture, NoiseTexture};
+use texture::{CheckerTexture, SolidColor, ImageTexture, NoiseTexture};
 use Vec3 as Point3;
 use Vec3 as Color;
 

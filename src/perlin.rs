@@ -1,13 +1,12 @@
 use rand::prelude::*;
 
 use crate::vec3::{Vec3};
-use crate::utils::{random_f64};
 use Vec3 as Point3;
 
 #[derive(Clone)]
 pub struct Perlin {
     point_count: usize,
-    rand_float: Vec<f64>,
+    rand_vec: Vec<Vec3>,
     perm_x: Vec<usize>,
     perm_y: Vec<usize>,
     perm_z: Vec<usize>,
@@ -17,7 +16,7 @@ impl Perlin {
     pub fn new(point_count: usize) -> Self {
         Self {
             point_count,
-            rand_float: Self::generate_floats(point_count),
+            rand_vec: Self::generate_vecs(point_count),
             perm_x: Self::perlin_generate_perm(point_count),
             perm_y: Self::perlin_generate_perm(point_count),
             perm_z: Self::perlin_generate_perm(point_count),
@@ -25,24 +24,20 @@ impl Perlin {
     }
 
     pub fn noise(&self, p: Point3) -> f64 {
-        let mut u = p.x() - p.x().floor();
-        let mut v = p.y() - p.y().floor();
-        let mut w = p.z() - p.z().floor();
-
-        u = u * u * (3.0 - 2.0 * u);
-        v = v * v * (3.0 - 2.0 * v);
-        w = w * w * (3.0 - 2.0 * w);
+        let u = p.x() - p.x().floor();
+        let v = p.y() - p.y().floor();
+        let w = p.z() - p.z().floor();
 
         let i = p.x().floor() as i64;
         let j = p.y().floor() as i64;
         let k = p.z().floor() as i64;
 
-        let mut c = [[[0.0; 2]; 2]; 2];
+        let mut c = [[[Vec3::origin(); 2]; 2]; 2];
 
         for di in 0..2 {
             for dj in 0..2 {
                 for dk in 0..2 {
-                    c[di][dj][dk] = self.rand_float[
+                    c[di][dj][dk] = self.rand_vec[
                         self.perm_x[(i + di as i64) as usize & 255] ^
                         self.perm_y[(j + dj as i64) as usize & 255] ^
                         self.perm_z[(k + dk as i64) as usize & 255]
@@ -51,7 +46,7 @@ impl Perlin {
             }
         }
 
-        Self::trilinear_interp(&c, u, v, w)        
+        Self::perlin_interp(c, u, v, w)        
     }
 
     fn perlin_generate_perm(point_count: usize) -> Vec<usize> {
@@ -61,26 +56,30 @@ impl Perlin {
         nums
     }
 
-    fn generate_floats(point_count: usize) -> Vec<f64> {
-        let mut nums = vec![];
+    fn generate_vecs(point_count: usize) -> Vec<Vec3> {
+        let mut vecs = vec![];
 
         for _ in 0..point_count {
-            nums.push(random_f64());
+            vecs.push(Vec3::random_range(-1.0, 1.0).unit());
         }
 
-        nums
+        vecs
     }
 
-    fn trilinear_interp(c: &[[[f64; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
+    fn perlin_interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
+        let uu = u * u * (3.0 - 2.0 * u);
+        let vv = v * v * (3.0 - 2.0 * v);
+        let ww = w * w * (3.0 - 2.0 * w);
         let mut acc = 0.0;
 
         for i in 0..2 {
             for j in 0..2 {
                 for k in 0..2 {
-                    acc += (i as f64 * u + (1 - i) as f64 * (1.0 - u))
-                         * (j as f64 * v + (1 - j) as f64 * (1.0 - v))
-                         * (k as f64 * w + (1 - k) as f64 * (1.0 - w))
-                         * c[i][j][k];
+                    let weight_v = Vec3::new(u - i as f64, v - j as f64, w - k as f64);
+                    acc += (i as f64 * uu + (1 - i) as f64 * (1.0 - uu))
+                         * (j as f64 * vv + (1 - j) as f64 * (1.0 - vv))
+                         * (k as f64 * ww + (1 - k) as f64 * (1.0 - ww))
+                         * c[i][j][k].dot(weight_v);
                 }
             }
         }

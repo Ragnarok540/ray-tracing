@@ -2,7 +2,7 @@ use crate::vec3::{Vec3};
 use crate::ray::{Ray};
 use crate::hittable::{HitRecord};
 use crate::utils::{random_f64};
-use crate::texture::{Texture, SolidColor};
+use crate::texture::{Texture};
 use Vec3 as Color;
 
 pub trait Material {
