@@ -15,14 +15,26 @@ mod perlin;
 
 use image;
 
-use vec3::{Vec3};
-use sphere::{Sphere};
-use hittable::{HittableList};
-use camera::{Camera};
-use material::{Lambertian, Metal, Dielectric};
-use utils::{random_f64, random_range_f64};
-use bvh::{BVH};
-use texture::{CheckerTexture, SolidColor, ImageTexture, NoiseTexture};
+use vec3::Vec3;
+use sphere::Sphere;
+use hittable::HittableList;
+use camera::Camera;
+use material::{
+    Dielectric,
+    Lambertian,
+    Metal,
+};
+use utils::{
+    random_f64,
+    random_range_f64
+};
+use bvh::BVH;
+use texture::{
+    CheckerTexture,
+    ImageTexture,
+    NoiseTexture,
+    SolidColor,
+};
 use Vec3 as Point3;
 use Vec3 as Color;
 

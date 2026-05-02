@@ -1,6 +1,6 @@
-use crate::vec3::{Vec3};
-use crate::interval::{Interval};
-use crate::perlin::{Perlin};
+use crate::vec3::Vec3;
+use crate::interval::Interval;
+use crate::perlin::Perlin;
 use Vec3 as Color;
 use Vec3 as Point3;
 
@@ -118,6 +118,7 @@ impl NoiseTexture {
 
 impl Texture for NoiseTexture {
     fn value(&self, _u: f64, _v: f64, p: Point3) -> Color {
-        Color::new(1.0, 1.0, 1.0) * 0.5 * (1.0 + self.noise.noise(p * self.scale))
+        // Color::new(1.0, 1.0, 1.0) * 0.5 * (1.0 + self.noise.noise(p * self.scale))
+        Color::new(1.0, 1.0, 1.0) * self.noise.turbulence(p, 7)
     }
 }

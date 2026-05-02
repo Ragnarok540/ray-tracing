@@ -1,6 +1,6 @@
-use crate::vec3::{Vec3};
+use crate::vec3::Vec3;
 use crate::ray::Ray;
-use crate::interval::{Interval};
+use crate::interval::Interval;
 use Vec3 as Point3;
 
 #[derive(Copy, Clone)]

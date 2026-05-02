@@ -1,9 +1,12 @@
-use crate::vec3::{Vec3};
-use crate::ray::{Ray};
-use crate::hittable::{HitRecord, Hittable};
-use crate::interval::{Interval};
-use crate::material::{Material};
-use crate::aabb::{AABB};
+use crate::vec3::Vec3;
+use crate::ray::Ray;
+use crate::hittable::{
+    HitRecord,
+    Hittable
+};
+use crate::interval::Interval;
+use crate::material::Material;
+use crate::aabb::AABB;
 use Vec3 as Point3;
 
 pub struct Sphere<M: Material> {

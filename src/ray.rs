@@ -1,4 +1,4 @@
-use crate::vec3::{Vec3};
+use crate::vec3::Vec3;
 use Vec3 as Point3;
 
 #[derive(Copy, Clone)]

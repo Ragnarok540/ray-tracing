@@ -1,9 +1,12 @@
 use std::cmp::Ordering;
 
-use crate::ray::{Ray};
-use crate::hittable::{HitRecord, Hittable};
-use crate::interval::{Interval};
-use crate::aabb::{AABB};
+use crate::ray::Ray;
+use crate::hittable::{
+    HitRecord,
+    Hittable
+};
+use crate::interval::Interval;
+use crate::aabb::AABB;
 
 enum BVHNode {
     Branch { left: Box<BVH>, right: Box<BVH> },

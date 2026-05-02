@@ -1,7 +1,11 @@
 use std::fmt;
 use std::ops;
-use crate::interval::{Interval};
-use crate::utils::{random_f64, random_range_f64};
+
+use crate::interval::Interval;
+use crate::utils::{
+    random_f64,
+    random_range_f64,
+};
 
 #[derive(Copy, Clone)]
 pub struct Vec3 {
@@ -130,7 +134,7 @@ impl Vec3 {
         *v - *n * v.dot(*n) * 2.0
     }
 
-    pub fn refract(uv: &Self, n: &Self, etai_over_etat: f64) -> Vec3 {
+    pub fn refract(uv: &Self, n: &Self, etai_over_etat: f64) -> Self {
         let cos_theta = -uv.dot(*n).min(1.0);
         let r_out_perp = (*uv + *n * cos_theta) * etai_over_etat;
         let r_out_parallel = *n * -(1.0 - r_out_perp.length_squared().abs()).sqrt();

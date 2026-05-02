@@ -1,6 +1,6 @@
 use rand::prelude::*;
 
-use crate::vec3::{Vec3};
+use crate::vec3::Vec3;
 use Vec3 as Point3;
 
 #[derive(Clone)]
@@ -46,7 +46,21 @@ impl Perlin {
             }
         }
 
-        Self::perlin_interp(c, u, v, w)        
+        Self::perlin_interpolation(c, u, v, w)        
+    }
+
+    pub fn turbulence(&self, p: Point3, depth: usize) -> f64 {
+        let mut acc = 0.0;
+        let mut temp_p = p.clone();
+        let mut weight = 1.0;
+
+        for _ in 0..depth {
+            acc += weight * self.noise(temp_p);
+            weight *= 0.5;
+            temp_p *= 2.0;
+        }
+
+        acc.abs()
     }
 
     fn perlin_generate_perm(point_count: usize) -> Vec<usize> {
@@ -66,7 +80,7 @@ impl Perlin {
         vecs
     }
 
-    fn perlin_interp(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
+    fn perlin_interpolation(c: [[[Vec3; 2]; 2]; 2], u: f64, v: f64, w: f64) -> f64 {
         let uu = u * u * (3.0 - 2.0 * u);
         let vv = v * v * (3.0 - 2.0 * v);
         let ww = w * w * (3.0 - 2.0 * w);

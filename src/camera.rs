@@ -2,11 +2,14 @@ use rand::prelude::*;
 
 use std::time::SystemTime;
 
-use crate::vec3::{Vec3};
-use crate::ray::{Ray};
-use crate::hittable::{Hittable};
-use crate::interval::{Interval};
-use crate::utils::{degrees_to_radians, random_f64};
+use crate::vec3::Vec3;
+use crate::ray::Ray;
+use crate::hittable::Hittable;
+use crate::interval::Interval;
+use crate::utils::{
+    degrees_to_radians,
+    random_f64,
+};
 use Vec3 as Point3;
 use Vec3 as Color;
 
