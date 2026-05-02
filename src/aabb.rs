@@ -12,15 +12,15 @@ pub struct AABB {
 
 impl AABB {
     pub fn new(x: Interval, y: Interval, z: Interval) -> Self {
-        Self { x, y, z }
+        Self::pad_to_minimums(&Self { x, y, z })
     }
 
     pub fn two_points(a: Point3, b: Point3) -> Self {
-        Self {
+        Self::pad_to_minimums(&Self {
             x: if a.x() <= b.x() { Interval::new(a.x(), b.x()) } else { Interval::new(b.x(), a.x()) },
             y: if a.y() <= b.y() { Interval::new(a.y(), b.y()) } else { Interval::new(b.y(), a.y()) },
             z: if a.z() <= b.z() { Interval::new(a.z(), b.z()) } else { Interval::new(b.z(), a.z()) },
-        }
+        })
     }
 
     pub fn two_aabb(box0: Self, box1: Self) -> Self {
@@ -102,5 +102,32 @@ impl AABB {
         }
 
         return true;
+    }
+
+    fn pad_to_minimums(new_aabb: &Self) -> Self {
+        let delta = 0.0001;
+        let mut x = Interval::empty();
+        let mut y = Interval::empty();
+        let mut z = Interval::empty();
+        
+        if new_aabb.x.size() < delta {
+            x = new_aabb.x.expand(delta);
+        } else {
+            x = new_aabb.x;
+        }
+
+        if new_aabb.y.size() < delta {
+            y = new_aabb.y.expand(delta);
+        } else {
+            y = new_aabb.y;
+        }
+
+        if new_aabb.z.size() < delta {
+            z = new_aabb.z.expand(delta);
+        } else {
+            z = new_aabb.z;
+        }
+
+        Self { x, y, z }
     }
 }
