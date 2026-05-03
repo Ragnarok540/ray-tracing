@@ -7,7 +7,9 @@ use Vec3 as Point3;
 use Vec3 as Color;
 
 pub trait Material {
-    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)>;
+    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
+        None
+    }
 
     fn emmited(&self, u: f64, v:f64, p: Point3) -> Color {
         Color::origin()
@@ -117,10 +119,6 @@ impl<T: Texture> DiffuseLight<T> {
 }
 
 impl<T: Texture> Material for DiffuseLight<T> {
-    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
-        None
-    }
-
     fn emmited(&self, u: f64, v:f64, p: Point3) -> Color {
         self.texture.value(u, v, p)
     }

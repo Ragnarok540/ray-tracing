@@ -184,8 +184,32 @@ fn simple_light() {
     camera.render(&new_world, false);
 }
 
+fn cornell_box() {
+    let mut world = HittableList::new();
+
+    let red = Lambertian::new(SolidColor::new(Color::new(0.65, 0.05, 0.05)));
+    let white = Lambertian::new(SolidColor::new(Color::new(0.73, 0.73, 0.73)));
+    let green = Lambertian::new(SolidColor::new(Color::new(0.12, 0.45, 0.15)));
+    let light = DiffuseLight::new(SolidColor::new(Color::new(15.0, 15.0, 15.0)));
+
+    world.add(Quad::new(Point3::new(555.0, 0.0, 0.0), Vec3::new(0.0, 555.0, 0.0), Vec3::new(0.0, 0.0, 555.0), green));
+    world.add(Quad::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 555.0, 0.0), Vec3::new(0.0, 0.0, 555.0), red));
+    world.add(Quad::new(Point3::new(343.0, 554.0, 332.0), Vec3::new(-130.0, 0.0, 0.0), Vec3::new(0.0, 0.0, -105.0), light));
+    world.add(Quad::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(555.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 555.0), white.clone()));
+    world.add(Quad::new(Point3::new(555.0, 555.0, 555.0), Vec3::new(-555.0, 0.0, 0.0), Vec3::new(0.0, 0.0, -555.0), white.clone()));
+    world.add(Quad::new(Point3::new(0.0, 0.0, 555.0), Vec3::new(555.0, 0.0, 0.0), Vec3::new(0.0, 555.0, 0.0), white));
+
+    let mut camera = Camera::new(1.0, 600, 200, 50);
+    camera.move_camera(40.0, Point3::new(278.0, 278.0, -800.0), Point3::new(278.0, 278.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.depth_of_field(0.0, 10.0);
+    camera.background_color(Color::new(0.0, 0.0, 0.0));
+
+    let new_world = BVH::new(world.objects);
+    camera.render(&new_world, false);
+}
+
 fn main() {
-    let scene = 6;
+    let scene = 7;
 
     match scene {
         1 => bouncing_spheres(),
@@ -194,6 +218,7 @@ fn main() {
         4 => perlin_spheres(),
         5 => quads(),
         6 => simple_light(),
+        7 => cornell_box(),
         _ => panic!["scene does not exist"],
     }
 }
