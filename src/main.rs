@@ -22,6 +22,7 @@ use hittable::HittableList;
 use camera::Camera;
 use material::{
     Dielectric,
+    DiffuseLight,
     Lambertian,
     Metal,
 };
@@ -85,6 +86,7 @@ fn bouncing_spheres() {
     let mut camera = Camera::new(16.0 / 9.0, 400, 10, 50); // 10 -> 500
     camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.6, 10.0);
+    camera.background_color(Color::new(0.7, 0.8, 1.0));
 
     let new_world = BVH::new(world.objects);
     camera.render(&new_world, false);
@@ -101,6 +103,7 @@ fn checkered_spheres() {
     let mut camera = Camera::new(16.0 / 9.0, 400, 50, 50);
     camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.0, 10.0);
+    camera.background_color(Color::new(0.7, 0.8, 1.0));
 
     camera.render(&world, false);
 }
@@ -118,6 +121,7 @@ fn earth() {
     let mut camera = Camera::new(16.0 / 9.0, 400, 50, 50);
     camera.move_camera(20.0, Point3::new(0.0, 0.0, 12.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.0, 10.0);
+    camera.background_color(Color::new(0.7, 0.8, 1.0));
 
     camera.render(&world, false);
 }
@@ -132,6 +136,7 @@ fn perlin_spheres() {
     let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50);
     camera.move_camera(20.0, Point3::new(13.0, 2.0, 3.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.0, 10.0);
+    camera.background_color(Color::new(0.7, 0.8, 1.0));
 
     camera.render(&world, false);
 }
@@ -154,13 +159,32 @@ fn quads() {
     let mut camera = Camera::new(1.0, 400, 100, 50);
     camera.move_camera(80.0, Point3::new(0.0, 0.0, 9.0), Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.0, 10.0);
+    camera.background_color(Color::new(0.7, 0.8, 1.0));
+
+    let new_world = BVH::new(world.objects);
+    camera.render(&new_world, false);
+}
+
+fn simple_light() {
+    let mut world = HittableList::new();
+
+    let pertext = NoiseTexture::new(4.0);
+    world.add(Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, Lambertian::new(pertext.clone())));
+    world.add(Sphere::new(Point3::new(0.0, 2.0, 0.0), 2.0, Lambertian::new(pertext)));
+
+    let diff_light = DiffuseLight::new(SolidColor::new(Color::new(4.0, 4.0, 4.0)));
+    world.add(Quad::new(Point3::new(3.0, 1.0, -2.0), Vec3::new(2.0, 0.0, 0.0), Vec3::new(0.0, 2.0, 0.0), diff_light));
+
+    let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50);
+    camera.move_camera(20.0, Point3::new(26.0, 3.0, 6.0), Point3::new(0.0, 2.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.depth_of_field(0.0, 10.0);
 
     let new_world = BVH::new(world.objects);
     camera.render(&new_world, false);
 }
 
 fn main() {
-    let scene = 5;
+    let scene = 6;
 
     match scene {
         1 => bouncing_spheres(),
@@ -168,6 +192,7 @@ fn main() {
         3 => earth(),
         4 => perlin_spheres(),
         5 => quads(),
+        6 => simple_light(),
         _ => panic!["scene does not exist"],
     }
 }

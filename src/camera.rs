@@ -24,6 +24,7 @@ pub struct Camera {
     pub vup: Vec3,                // Camera-relative "up" direction
     pub defocus_angle: f64,       // Variation angle of rays through each pixel
     pub focus_dist: f64,          // Distance from camera lookfrom point to plane of perfect focus
+    pub background: Color,         // Scene background color
     image_height: usize,      // Rendered image height
     pixel_samples_scale: f64, // Color scale factor for a sum of pixel samples
     center: Point3,           // Camera center
@@ -50,7 +51,8 @@ impl Camera {
             look_at: Point3::new(0.0, 0.0, -1.0),
             vup: Vec3::new(0.0, 1.0, 0.0),
             defocus_angle: 0.0,
-            focus_dist: 10.0,  
+            focus_dist: 10.0,
+            background: Color::origin(),
             image_height: 0,
             pixel_samples_scale: 0.0,
             center: Point3::origin(),
@@ -112,23 +114,29 @@ impl Camera {
         self.focus_dist = focus_dist;
     }
 
-    fn ray_color(ray: &Ray, depth: usize, world: &dyn Hittable) -> Color {
+    pub fn background_color(&mut self, color: Color) {
+        self.background = color;
+    }
+
+    fn ray_color(&self, ray: &Ray, depth: usize, world: &dyn Hittable) -> Color {
         if depth <= 0 {
             // If we've exceeded the ray bounce limit, no more light is gathered.
             return Color::origin();
         }
 
         if let Some(rec) = world.hit(*ray, Interval::new(0.001, f64::INFINITY)) {
-            if let Some((scattered, attenuation)) = rec.material.scatter(ray, &rec) {
-                return Self::ray_color(&scattered, depth - 1, world) * attenuation;
-            } else {
-                return Color::origin();
-            }
-        }
+            let color_from_emission = rec.material.emmited(rec.u, rec.v, rec.p);
 
-        let unit_direction = ray.direction.unit();
-        let a = (unit_direction.y() + 1.0) * 0.5;
-        Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a
+            if let Some((scattered, attenuation)) = rec.material.scatter(ray, &rec) {
+                let color_from_scatter = self.ray_color(&scattered, depth - 1, world) * attenuation;
+
+                return color_from_emission + color_from_scatter;
+            } else {
+                return color_from_emission;
+            }
+        } else {
+            return self.background;
+        }
     }
 
     fn sample_square(&mut self) -> Vec3 {
@@ -179,7 +187,7 @@ impl Camera {
 
                 for _sample in 0..self.samples_per_pixel {
                     let ray: Ray = self.get_ray(i, j);
-                    pixel_color += Self::ray_color(&ray, self.max_depth, world);
+                    pixel_color += self.ray_color(&ray, self.max_depth, world);
                 }
 
                 (pixel_color * self.pixel_samples_scale).write_color();

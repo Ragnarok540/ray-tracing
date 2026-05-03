@@ -3,10 +3,15 @@ use crate::ray::Ray;
 use crate::hittable::HitRecord;
 use crate::utils::random_f64;
 use crate::texture::Texture;
+use Vec3 as Point3;
 use Vec3 as Color;
 
 pub trait Material {
     fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)>;
+
+    fn emmited(&self, u: f64, v:f64, p: Point3) -> Color {
+        Color::origin()
+    }
 }
 
 #[derive(Copy, Clone)]
@@ -97,5 +102,26 @@ impl Material for Dielectric {
 
         let scattered = Ray::new(rec.p, direction, ray.time);
         Some((scattered, attenuation))
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct DiffuseLight<T: Texture> {
+    pub texture: T,
+}
+
+impl<T: Texture> DiffuseLight<T> {
+    pub fn new(texture: T) -> Self {
+        Self { texture }
+    }
+}
+
+impl<T: Texture> Material for DiffuseLight<T> {
+    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
+        None
+    }
+
+    fn emmited(&self, u: f64, v:f64, p: Point3) -> Color {
+        self.texture.value(u, v, p)
     }
 }
