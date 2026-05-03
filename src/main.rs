@@ -173,6 +173,7 @@ fn simple_light() {
     world.add(Sphere::new(Point3::new(0.0, 2.0, 0.0), 2.0, Lambertian::new(pertext)));
 
     let diff_light = DiffuseLight::new(SolidColor::new(Color::new(4.0, 4.0, 4.0)));
+    world.add(Sphere::new(Point3::new(0.0, 7.0, 0.0), 2.0, diff_light.clone()));
     world.add(Quad::new(Point3::new(3.0, 1.0, -2.0), Vec3::new(2.0, 0.0, 0.0), Vec3::new(0.0, 2.0, 0.0), diff_light));
 
     let mut camera = Camera::new(16.0 / 9.0, 400, 100, 50);
