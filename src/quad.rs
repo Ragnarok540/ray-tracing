@@ -2,13 +2,15 @@ use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::hittable::{
     HitRecord,
-    Hittable
+    Hittable,
+    HittableList,
 };
 use crate::interval::Interval;
 use crate::material::Material;
 use crate::aabb::AABB;
 use Vec3 as Point3;
 
+#[derive(Clone)]
 pub struct Quad<M: Material> {
     pub q: Point3,
     pub u: Vec3,
@@ -20,7 +22,7 @@ pub struct Quad<M: Material> {
     pub d: f64,
 }
 
-impl<M: Material> Quad<M> {
+impl<M: Material + Clone + 'static> Quad<M> {
     pub fn new(q: Point3, u: Vec3, v: Vec3, material: M) -> Self {
         let bbox = Self::set_bounding_box(q, u, v);
         let n = u.cross(v);
@@ -47,9 +49,32 @@ impl<M: Material> Quad<M> {
 
         Some((alpha, beta))
     }
+
+    // box -> rectangular_cuboid
+    pub fn rectangular_cuboid(a: Point3, b: Point3, material: M) -> HittableList {
+        // Returns the 3D box (six sides) that contains the two opposite vertices a & b.
+        let mut sides = HittableList::new();
+
+        // Construct the two opposite vertices with the minimum and maximum coordinates.
+        let min = Point3::new(a.x().min(b.x()), a.y().min(b.y()), a.z().min(b.z()));
+        let max = Point3::new(a.x().max(b.x()), a.y().max(b.y()), a.z().max(b.z()));
+
+        let dx = Vec3::new(max.x() - min.x(), 0.0, 0.0);
+        let dy = Vec3::new(0.0, max.y() - min.y(), 0.0);
+        let dz = Vec3::new(0.0, 0.0, max.z() - min.z());
+
+        sides.add(Quad::new(Point3::new(min.x(), min.y(), max.z()),  dx,  dy, material.clone())); // front
+        sides.add(Quad::new(Point3::new(max.x(), min.y(), max.z()), -dz,  dy, material.clone())); // right
+        sides.add(Quad::new(Point3::new(max.x(), min.y(), min.z()), -dx,  dy, material.clone())); // back
+        sides.add(Quad::new(Point3::new(min.x(), min.y(), min.z()),  dz,  dy, material.clone())); // left
+        sides.add(Quad::new(Point3::new(min.x(), max.y(), max.z()),  dx, -dz, material.clone())); // top
+        sides.add(Quad::new(Point3::new(min.x(), min.y(), min.z()),  dx,  dz, material.clone())); // bottom
+
+        sides
+    }
 }
 
-impl<M: Material> Hittable for Quad<M> {
+impl<M: Material + Clone + 'static> Hittable for Quad<M> {
     fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
         let denom = self.normal.dot(ray.direction);
 
