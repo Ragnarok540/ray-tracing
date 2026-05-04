@@ -125,6 +125,14 @@ impl Vec3 {
         }
     }
 
+    pub fn min() -> Self {
+        Self { e: [f64::INFINITY, f64::INFINITY, f64::INFINITY] }
+    }
+
+    pub fn max() -> Self {
+        Self { e: [-f64::INFINITY, -f64::INFINITY, -f64::INFINITY] }
+    }
+
     pub fn near_zero(&self) -> bool {
         let s: f64 = 1e-8;
         self.e[0].abs() < s && self.e[1].abs() < s && self.e[2].abs() < s

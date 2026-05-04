@@ -18,7 +18,11 @@ use image;
 
 use vec3::Vec3;
 use sphere::Sphere;
-use hittable::HittableList;
+use hittable::{
+    HittableList,
+    RotateY,
+    Translate,
+};
 use camera::Camera;
 use material::{
     Dielectric,
@@ -199,8 +203,15 @@ fn cornell_box() {
     world.add(Quad::new(Point3::new(555.0, 555.0, 555.0), Vec3::new(-555.0, 0.0, 0.0), Vec3::new(0.0, 0.0, -555.0), white.clone()));
     world.add(Quad::new(Point3::new(0.0, 0.0, 555.0), Vec3::new(555.0, 0.0, 0.0), Vec3::new(0.0, 555.0, 0.0), white.clone()));
 
-    world.add(Quad::rectangular_cuboid(Point3::new(130.0, 0.0, 65.0), Point3::new(295.0, 165.0, 230.0), white.clone()));
-    world.add(Quad::rectangular_cuboid(Point3::new(265.0, 0.0, 295.0), Point3::new(430.0, 330.0, 460.0), white));
+    let box1 = Quad::rectangular_cuboid(Point3::new(0.0, 0.0, 0.0), Point3::new(165.0, 330.0, 165.0), white.clone());
+    let box1r = RotateY::new(box1, 15.0);
+    let box1rt = Translate::new(box1r, Vec3::new(265.0, 0.0, 295.0));
+    world.add(box1rt);
+
+    let box2 = Quad::rectangular_cuboid(Point3::new(0.0, 0.0, 0.0), Point3::new(165.0, 165.0, 165.0), white);
+    let box2r = RotateY::new(box2, -18.0);
+    let box2rt = Translate::new(box2r, Vec3::new(130.0, 0.0, 65.0));
+    world.add(box2rt);
 
     let mut camera = Camera::new(1.0, 600, 200, 50);
     camera.move_camera(40.0, Point3::new(278.0, 278.0, -800.0), Point3::new(278.0, 278.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
