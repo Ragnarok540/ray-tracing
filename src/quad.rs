@@ -10,7 +10,7 @@ use crate::material::Material;
 use crate::aabb::AABB;
 use Vec3 as Point3;
 
-#[derive(Clone)]
+// #[derive(Clone)]
 pub struct Quad<M: Material> {
     pub q: Point3,
     pub u: Vec3,

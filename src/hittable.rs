@@ -63,3 +63,43 @@ impl Hittable for HittableList {
         self.bbox
     }
 }
+
+pub struct Translate {
+    pub object: Box<dyn Hittable>,
+    pub offset: Vec3,
+    pub bbox: AABB,
+}
+
+impl Translate {
+    pub fn new(object: Box<dyn Hittable>, offset: Vec3) -> Self {
+        let bbox = object.bounding_box() + offset;
+
+        Self {
+            object,
+            offset,
+            bbox,
+        }
+    }
+}
+
+impl Hittable for Translate {
+
+    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
+        let mut hit_anything: Option<HitRecord<'_>> = None;
+
+        // Move the ray backwards by the offset
+        let offset_ray = Ray::new(ray.origin - self.offset, ray.direction, ray.time);
+
+        // Determine whether an intersection exists along the offset ray (and if so, where)
+        if let Some(mut hit) = self.object.hit(offset_ray, ray_t) {
+            hit.p += self.offset;
+            hit_anything = Some(hit);
+        }
+
+        hit_anything
+    }
+
+    fn bounding_box(&self) -> AABB {
+        self.bbox
+    }
+}

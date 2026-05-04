@@ -1,3 +1,5 @@
+use std::ops;
+
 use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::interval::Interval;
@@ -129,5 +131,17 @@ impl AABB {
         }
 
         Self { x, y, z }
+    }
+}
+
+impl ops::Add<Vec3> for AABB {
+    type Output = Self;
+
+    fn add(self, offset: Vec3) -> Self {
+        Self {
+            x: self.x + offset.x(),
+            y: self.y + offset.y(),
+            z: self.z + offset.z(),
+        }
     }
 }
