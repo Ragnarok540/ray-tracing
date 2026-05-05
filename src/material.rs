@@ -123,3 +123,22 @@ impl<T: Texture> Material for DiffuseLight<T> {
         self.texture.value(u, v, p)
     }
 }
+
+#[derive(Copy, Clone)]
+pub struct Isotropic<T: Texture> {
+    pub texture: T,
+}
+
+impl<T: Texture> Isotropic<T> {
+    pub fn new(texture: T) -> Self {
+        Self { texture }
+    }
+}
+
+impl<T: Texture> Material for Isotropic<T> {
+    fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
+        let scattered = Ray::new(rec.p, Vec3::random_unit_vector(), ray.time);
+        let attenuation = self.texture.value(rec.u, rec.v, rec.p);
+        Some((scattered, attenuation))
+    }
+}

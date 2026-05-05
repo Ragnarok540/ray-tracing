@@ -19,7 +19,7 @@ pub struct BVH {
 }
 
 impl BVH {
-    pub fn new(mut objects: Vec<Box<dyn Hittable>>) -> BVH {
+    pub fn new(mut objects: Vec<Box<dyn Hittable>>) -> Self {
         // Build the bounding box of the span of source objects.
         let mut bbox = AABB::empty();
 
@@ -34,13 +34,13 @@ impl BVH {
             0 => panic!["no elements in scene"],
             1 => {
                 let leaf = objects.pop().unwrap();
-                BVH { tree: BVHNode::Leaf(leaf), bbox }
+                Self { tree: BVHNode::Leaf(leaf), bbox }
             },
             _ => {
                 objects.sort_by(|a, b| Self::box_compare(a, b, axis));
-                let left = BVH::new(objects.drain(len / 2..).collect());
-                let right = BVH::new(objects);
-                BVH { tree: BVHNode::Branch { left: Box::new(left), right: Box::new(right) }, bbox }
+                let left = Self::new(objects.drain(len / 2..).collect());
+                let right = Self::new(objects);
+                Self { tree: BVHNode::Branch { left: Box::new(left), right: Box::new(right) }, bbox }
             }
         }
     }

@@ -11,7 +11,7 @@ pub struct HitRecord<'a> {
     pub p: Point3,
     pub front_face: bool,
     pub normal: Vec3,
-    pub material: &'a dyn Material, // Box?
+    pub material: &'a dyn Material,
     pub u: f64,
     pub v: f64,
 }

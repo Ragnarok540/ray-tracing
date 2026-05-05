@@ -13,6 +13,7 @@ mod bvh;
 mod texture;
 mod perlin;
 mod quad;
+mod constant_medium;
 
 use image;
 
@@ -42,6 +43,7 @@ use texture::{
     SolidColor,
 };
 use quad::Quad;
+use constant_medium::ConstantMedium;
 use Vec3 as Point3;
 use Vec3 as Color;
 
@@ -222,8 +224,42 @@ fn cornell_box() {
     camera.render(&new_world, false);
 }
 
+fn cornell_smoke() {
+    let mut world = HittableList::new();
+
+    let red = Lambertian::new(SolidColor::new(Color::new(0.65, 0.05, 0.05)));
+    let white = Lambertian::new(SolidColor::new(Color::new(0.73, 0.73, 0.73)));
+    let green = Lambertian::new(SolidColor::new(Color::new(0.12, 0.45, 0.15)));
+    let light = DiffuseLight::new(SolidColor::new(Color::new(7.0, 7.0, 7.0)));
+
+    world.add(Quad::new(Point3::new(555.0, 0.0, 0.0), Vec3::new(0.0, 555.0, 0.0), Vec3::new(0.0, 0.0, 555.0), green));
+    world.add(Quad::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 555.0, 0.0), Vec3::new(0.0, 0.0, 555.0), red));
+    world.add(Quad::new(Point3::new(113.0, 554.0, 127.0), Vec3::new(330.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 305.0), light));
+    world.add(Quad::new(Point3::new(0.0, 0.0, 0.0), Vec3::new(555.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 555.0), white.clone()));
+    world.add(Quad::new(Point3::new(555.0, 555.0, 555.0), Vec3::new(-555.0, 0.0, 0.0), Vec3::new(0.0, 0.0, -555.0), white.clone()));
+    world.add(Quad::new(Point3::new(0.0, 0.0, 555.0), Vec3::new(555.0, 0.0, 0.0), Vec3::new(0.0, 555.0, 0.0), white.clone()));
+
+    let box1 = Quad::rectangular_cuboid(Point3::new(0.0, 0.0, 0.0), Point3::new(165.0, 330.0, 165.0), white.clone());
+    let box1r = RotateY::new(box1, 15.0);
+    let box1rt = Translate::new(box1r, Vec3::new(265.0, 0.0, 295.0));
+    world.add(ConstantMedium::new(box1rt, 0.01, SolidColor::new(Color::new(0.0, 0.0, 0.0))));
+
+    let box2 = Quad::rectangular_cuboid(Point3::new(0.0, 0.0, 0.0), Point3::new(165.0, 165.0, 165.0), white);
+    let box2r = RotateY::new(box2, -18.0);
+    let box2rt = Translate::new(box2r, Vec3::new(130.0, 0.0, 65.0));
+    world.add(ConstantMedium::new(box2rt, 0.01, SolidColor::new(Color::new(1.0, 1.0, 1.0))));
+
+    let mut camera = Camera::new(1.0, 600, 200, 50);
+    camera.move_camera(40.0, Point3::new(278.0, 278.0, -800.0), Point3::new(278.0, 278.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+    camera.depth_of_field(0.0, 10.0);
+    camera.background_color(Color::new(0.0, 0.0, 0.0));
+
+    let new_world = BVH::new(world.objects);
+    camera.render(&new_world, false);
+}
+
 fn main() {
-    let scene = 7;
+    let scene = 8;
 
     match scene {
         1 => bouncing_spheres(),
@@ -233,6 +269,7 @@ fn main() {
         5 => quads(),
         6 => simple_light(),
         7 => cornell_box(),
+        8 => cornell_smoke(),
         _ => panic!["scene does not exist"],
     }
 }
