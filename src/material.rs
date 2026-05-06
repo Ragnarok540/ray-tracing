@@ -66,6 +66,7 @@ impl Material for Metal {
     }
 }
 
+#[derive(Copy, Clone)]
 pub struct Dielectric {
     // Refractive index in vacuum or air, or the ratio of the material's refractive index over
     // the refractive index of the enclosing media

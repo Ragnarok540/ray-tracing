@@ -9,6 +9,7 @@ use crate::material::Material;
 use crate::aabb::AABB;
 use Vec3 as Point3;
 
+#[derive(Clone)]
 pub struct Sphere<M: Material> {
     pub center: Ray,
     pub radius: f64,
