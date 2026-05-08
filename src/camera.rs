@@ -27,6 +27,8 @@ pub struct Camera {
     pub background: Color,         // Scene background color
     image_height: usize,      // Rendered image height
     pixel_samples_scale: f64, // Color scale factor for a sum of pixel samples
+    sqrt_spp: usize,          // Square root of number of samples per pixel
+    recip_sqrt_spp: f64,      // 1 / sqrt_spp
     center: Point3,           // Camera center
     pixel00_loc: Point3,      // Location of pixel 0, 0
     pixel_delta_u: Vec3,      // Offset to pixel to the right
@@ -55,6 +57,8 @@ impl Camera {
             background: Color::origin(),
             image_height: 0,
             pixel_samples_scale: 0.0,
+            sqrt_spp: 0,
+            recip_sqrt_spp: 0.0,
             center: Point3::origin(),
             pixel00_loc: Point3::origin(),
             pixel_delta_u: Vec3::origin(),
@@ -70,7 +74,10 @@ impl Camera {
 
     pub fn initialize(&mut self) {
         self.image_height = (self.image_width as f64 / self.aspect_ratio) as usize;
-        self.pixel_samples_scale = 1.0 / self.samples_per_pixel as f64;
+        self.sqrt_spp = self.samples_per_pixel.isqrt();
+        self.pixel_samples_scale = 1.0 / (self.sqrt_spp * self.sqrt_spp) as f64;
+        self.recip_sqrt_spp = 1.0 / self.sqrt_spp as f64;
+
         self.center = self.look_from;
 
         // Determine viewport dimensions.
@@ -150,10 +157,20 @@ impl Camera {
         self.center + self.defocus_disk_u * p.x() + self.defocus_disk_v * p.y()
     }
 
-    fn get_ray(&mut self, i: usize, j: usize) -> Ray {
+    fn sample_square_stratified(&mut self, s_i: usize, s_j: usize) -> Vec3 {
+        // Returns the vector to a random point in the square sub-pixel specified by grid
+        // indices s_i and s_j, for an idealized unit square pixel [-.5,-.5] to [+.5,+.5].
+        let px = ((s_i as f64 + self.rng.random_range(0.0..1.0)) * self.recip_sqrt_spp) - 0.5;
+        let py = ((s_j as f64 + self.rng.random_range(0.0..1.0)) * self.recip_sqrt_spp) - 0.5;
+
+        return Vec3::new(px, py, 0.0);
+    }
+
+    fn get_ray(&mut self, i: usize, j: usize, s_i: usize, s_j: usize) -> Ray {
         // Construct a camera ray originating from the defocus disk and directed at a randomly
         // sampled point around the pixel location i, j.
-        let offset: Vec3 = self.sample_square();
+        // let offset: Vec3 = self.sample_square();
+        let offset: Vec3 = self.sample_square_stratified(s_i, s_j);
         let pixel_sample = self.pixel00_loc
                          + (self.pixel_delta_u * (i as f64 + offset.x()))
                          + (self.pixel_delta_v * (j as f64 + offset.y()));
@@ -185,9 +202,11 @@ impl Camera {
             for i in 0..self.image_width {
                 let mut pixel_color = Color::origin();
 
-                for _sample in 0..self.samples_per_pixel {
-                    let ray: Ray = self.get_ray(i, j);
-                    pixel_color += self.ray_color(&ray, self.max_depth, world);
+                for s_j in 0..self.sqrt_spp {
+                    for s_i in 0..self.sqrt_spp {
+                        let ray: Ray = self.get_ray(i, j, s_i, s_j);
+                        pixel_color += self.ray_color(&ray, self.max_depth, world);
+                    }
                 }
 
                 (pixel_color * self.pixel_samples_scale).write_color();
