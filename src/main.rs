@@ -215,7 +215,7 @@ fn cornell_box() {
     let box2rt = Translate::new(box2r, Vec3::new(130.0, 0.0, 65.0));
     world.add(box2rt);
 
-    let mut camera = Camera::new(1.0, 600, 200, 50);
+    let mut camera = Camera::new(1.0, 600, 50, 50);
     camera.move_camera(40.0, Point3::new(278.0, 278.0, -800.0), Point3::new(278.0, 278.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.0, 10.0);
     camera.background_color(Color::new(0.0, 0.0, 0.0));

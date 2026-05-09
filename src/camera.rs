@@ -135,7 +135,9 @@ impl Camera {
             let color_from_emission = rec.material.emmited(rec.u, rec.v, rec.p);
 
             if let Some((scattered, attenuation)) = rec.material.scatter(ray, &rec) {
-                let color_from_scatter = self.ray_color(&scattered, depth - 1, world) * attenuation;
+                let scattering_pdf = rec.material.scattering_pdf(ray, &rec, &scattered);
+                let pdf_value = 1.0 / 2.0 * std::f64::consts::PI;
+                let color_from_scatter = (self.ray_color(&scattered, depth - 1, world) * scattering_pdf * attenuation) / pdf_value;
 
                 return color_from_emission + color_from_scatter;
             } else {

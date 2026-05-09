@@ -14,6 +14,10 @@ pub trait Material {
     fn emmited(&self, u: f64, v:f64, p: Point3) -> Color {
         Color::origin()
     }
+
+    fn scattering_pdf(&self, ray: &Ray, rec: &HitRecord, scattered: &Ray) -> f64 {
+        0.0
+    }
 }
 
 #[derive(Copy, Clone)]
@@ -39,6 +43,11 @@ impl<T: Texture> Material for Lambertian<T> {
         let scattered = Ray::new(rec.p, scatter_direction, ray.time);
         let attenuation = self.texture.value(rec.u, rec.v, rec.p);
         Some((scattered, attenuation))
+    }
+
+    fn scattering_pdf(&self, _ray: &Ray, rec: &HitRecord, scattered: &Ray) -> f64 {
+        let cos_theta = rec.normal.dot(scattered.direction.unit());
+        if cos_theta < 0.0 { 0.0 } else { cos_theta / std::f64::consts::PI }
     }
 }
 
