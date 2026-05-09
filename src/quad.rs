@@ -75,7 +75,7 @@ impl<M: Material + Clone + 'static> Quad<M> {
 }
 
 impl<M: Material + Clone + 'static> Hittable for Quad<M> {
-    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
         let denom = self.normal.dot(ray.direction);
 
         // No hit if the ray is parallel to the plane.

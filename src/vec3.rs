@@ -57,8 +57,8 @@ impl Vec3 {
         }
     }
 
-    pub fn unit(&self) -> Self {
-        self.clone() / self.length()
+    pub fn unit(self) -> Self {
+        self / self.length()
     }
 
     fn linear_to_gamma(linear_component: f64) -> f64 {

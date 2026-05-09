@@ -14,13 +14,13 @@
 
 ## Books
 
+- https://raytracing.github.io/
 - [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
 - [Ray Tracing: The Next Week](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
 - [Ray Tracing: The Rest of Your Life](https://raytracing.github.io/books/RayTracingTheRestOfYourLife.html)
 
 ## Other Implementations (for inspiration purposes)
 
-- https://raytracing.github.io/
 - https://github.com/fralken/ray-tracing-in-one-weekend
 - https://github.com/fralken/ray-tracing-the-next-week
 - https://github.com/fralken/ray-tracing-the-rest-of-your-life

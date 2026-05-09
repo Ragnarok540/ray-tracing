@@ -131,7 +131,7 @@ impl Camera {
             return Color::origin();
         }
 
-        if let Some(rec) = world.hit(*ray, Interval::new(0.001, f64::INFINITY)) {
+        if let Some(rec) = world.hit(ray, Interval::new(0.001, f64::INFINITY)) {
             let color_from_emission = rec.material.emmited(rec.u, rec.v, rec.p);
 
             if let Some((scattered, attenuation)) = rec.material.scatter(ray, &rec) {

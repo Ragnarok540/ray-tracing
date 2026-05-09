@@ -215,7 +215,7 @@ fn cornell_box() {
     let box2rt = Translate::new(box2r, Vec3::new(130.0, 0.0, 65.0));
     world.add(box2rt);
 
-    let mut camera = Camera::new(1.0, 600, 50, 50);
+    let mut camera = Camera::new(1.0, 600, 100, 50);
     camera.move_camera(40.0, Point3::new(278.0, 278.0, -800.0), Point3::new(278.0, 278.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
     camera.depth_of_field(0.0, 10.0);
     camera.background_color(Color::new(0.0, 0.0, 0.0));
@@ -264,7 +264,8 @@ fn final_scene(image_width: usize, samples_per_pixel: usize, max_depth: usize) {
     // ground
     let ground_material = Lambertian::new(SolidColor::new(Color::new(0.48, 0.83, 0.53)));
     let boxes_per_side = 20;
-    
+    let mut boxes1 = HittableList::new();
+
     for i in 0..boxes_per_side {
         for j in 0..boxes_per_side {
             let w = 100.0;
@@ -274,9 +275,11 @@ fn final_scene(image_width: usize, samples_per_pixel: usize, max_depth: usize) {
             let x1 = x0 + w;
             let y1 = random_range_f64(1.0, 101.0);
             let z1 = z0 + w;
-            world.add(Quad::rectangular_cuboid(Point3::new(x0, y0, z0), Point3::new(x1, y1, z1), ground_material.clone()));
+            boxes1.add(Quad::rectangular_cuboid(Point3::new(x0, y0, z0), Point3::new(x1, y1, z1), ground_material.clone()));
         }
     }
+
+    world.add(boxes1);
 
     // light
     let light_material = DiffuseLight::new(SolidColor::new(Color::new(7.0, 7.0, 7.0)));

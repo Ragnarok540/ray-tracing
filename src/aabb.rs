@@ -51,9 +51,9 @@ impl AABB {
 
     pub fn axis_interval(&self, n: usize) -> Interval {
         match n {
-            1 => return self.y.clone(),
-            2 => return self.z.clone(),
-            _ => return self.x.clone(),
+            1 => return self.y,
+            2 => return self.z,
+            _ => return self.x,
         }
     }
 
@@ -74,7 +74,7 @@ impl AABB {
         }
     }
 
-    pub fn hit(&self, ray: Ray, ray_t: &mut Interval) -> bool {
+    pub fn hit(&self, ray: &Ray, ray_t: &mut Interval) -> bool {
         for axis in 0..3 {
             let ax = self.axis_interval(axis);
             let adinv = 1.0 / ray.direction.e[axis];

@@ -58,7 +58,7 @@ impl BVH {
 }
 
 impl Hittable for BVH {
-    fn hit(&self, ray: Ray, mut ray_t: Interval) -> Option<HitRecord<'_>> {
+    fn hit(&self, ray: &Ray, mut ray_t: Interval) -> Option<HitRecord<'_>> {
         let mut hit_anything: Option<HitRecord<'_>> = None;
         let mut closest_so_far = ray_t.max;
 

@@ -14,6 +14,6 @@ impl Ray {
     }
 
     pub fn at(&self, t: f64) -> Point3 {
-        self.origin.clone() + self.direction.clone() * t
+        self.origin + self.direction * t
     }
 }

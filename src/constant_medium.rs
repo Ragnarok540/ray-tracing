@@ -27,7 +27,7 @@ impl<H: Hittable, T: Texture> ConstantMedium<H, T> {
 }
 
 impl<H: Hittable, T: Texture> Hittable for ConstantMedium<H, T> {
-    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
         let mut hit_anything: Option<HitRecord<'_>> = None;
 
         if let Some(mut hit1) = self.boundary.hit(ray, Interval::universe()) {

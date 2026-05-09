@@ -51,7 +51,7 @@ impl<M: Material> Sphere<M> {
 }
 
 impl<M: Material> Hittable for Sphere<M> {
-    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
         let current_center = self.center.at(ray.time);
         let oc = current_center - ray.origin;
         let a = ray.direction.length_squared();

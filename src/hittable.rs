@@ -23,7 +23,7 @@ impl<'a> HitRecord<'a> {
 }
 
 pub trait Hittable {
-    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>>;
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord<'_>>;
     fn bounding_box(&self) -> AABB;
 }
 
@@ -46,7 +46,7 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
         let mut hit_anything: Option<HitRecord<'_>> = None;
         let mut closest_so_far = ray_t.max;
 
@@ -84,14 +84,14 @@ impl<H: Hittable> Translate<H> {
 }
 
 impl<H: Hittable> Hittable for Translate<H> {
-    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
         let mut hit_anything: Option<HitRecord<'_>> = None;
 
         // Move the ray backwards by the offset
         let offset_ray = Ray::new(ray.origin - self.offset, ray.direction, ray.time);
 
         // Determine whether an intersection exists along the offset ray (and if so, where)
-        if let Some(mut hit) = self.object.hit(offset_ray, ray_t) {
+        if let Some(mut hit) = self.object.hit(&offset_ray, ray_t) {
             hit.p += self.offset;
             hit_anything = Some(hit);
         }
@@ -151,7 +151,7 @@ impl<H: Hittable> RotateY<H> {
 }
 
 impl<H: Hittable> Hittable for RotateY<H> {
-    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord<'_>> {
         let mut hit_anything: Option<HitRecord<'_>> = None;
 
         let origin = Point3::new(
@@ -169,7 +169,7 @@ impl<H: Hittable> Hittable for RotateY<H> {
         let rotated_ray = Ray::new(origin, direction, ray.time);
 
         // Determine whether an intersection exists along the offset ray (and if so, where)
-        if let Some(mut hit) = self.object.hit(rotated_ray, ray_t) {
+        if let Some(mut hit) = self.object.hit(&rotated_ray, ray_t) {
             hit.p = Point3::new(
                 (self.cos_theta * hit.p.x()) + (self.sin_theta * hit.p.z()),
                 hit.p.y(),
