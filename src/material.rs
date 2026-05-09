@@ -33,7 +33,7 @@ impl<T: Texture> Lambertian<T> {
 
 impl<T: Texture> Material for Lambertian<T> {
     fn scatter(&self, ray: &Ray, rec: &HitRecord) -> Option<(Ray, Vec3)> {
-        let mut scatter_direction = rec.normal + Vec3::random_unit_vector();
+        let mut scatter_direction = Vec3::random_on_hemisphere(&rec.normal);
 
         // Catch degenerate scatter direction
         if scatter_direction.near_zero() {
@@ -46,8 +46,7 @@ impl<T: Texture> Material for Lambertian<T> {
     }
 
     fn scattering_pdf(&self, _ray: &Ray, rec: &HitRecord, scattered: &Ray) -> f64 {
-        let cos_theta = rec.normal.dot(scattered.direction.unit());
-        if cos_theta < 0.0 { 0.0 } else { cos_theta / std::f64::consts::PI }
+        1.0 / 2.0 * std::f64::consts::PI
     }
 }
 
